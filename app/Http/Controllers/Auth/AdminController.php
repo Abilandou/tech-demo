@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 
 use App\Enquiry;
 use App\Contact;
+use Image;
 
 use Exception;
 use Illuminate\Support\Facades\Mail;

@@ -175,6 +175,10 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
 
+        
+        //!Intervention image to resize images to a certain size
+        'Intervention\Image\ImageServiceProvider',
+
     ],
 
     /*
@@ -225,6 +229,10 @@ return [
         'URL' => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
+
+         //!Intervention image to resize images to a certain size
+        'Image' => 'Intervention\Image\Facades\Image',
+
 
     ],
 
