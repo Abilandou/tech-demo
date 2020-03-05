@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\ItemCategory;
 use App\ItemAttribute;
 use Illuminate\Support\Facades\Storage;
+use App\Enquiry;
 
 class ShopController extends Controller
 {
@@ -236,7 +237,25 @@ class ShopController extends Controller
 
     }
 
-   
+    public function allEnquiries()
+    {
+        $enquiries = Enquiry::orderBy('id','DESC')->get();
+        return view('auth.admin.shop.enquiries')->with(compact('enquiries'));
+    }
 
+    public function deleteEnquiry(Request $request){
+
+        $enquiry_id = $request->enquiry_id;
+        $enquiry = Enquiry::where(['id'=>$enquiry_id])->delete();
+        if($enquiry){
+            
+            session()->flash('success', "Enquiry Deleted Successfully");
+            return redirect()->back();
+        }else{
+            session()->flash('error', 'Unable to delete Enquiry. possible internet error');
+            return redirect()->back();
+        }
+
+    }
 
 }

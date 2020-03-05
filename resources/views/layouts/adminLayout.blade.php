@@ -127,6 +127,9 @@
                             <li>
                                 <a href="{{route('shop.items')}}">Items</a>
                             </li>
+                            <li>
+                                <a href="{{route('shop.enquiries')}}">Enquiry Messages</a>
+                            </li>
                         </ul>
                     </li>
                 </ul>
@@ -145,12 +148,12 @@
                             <i class="ti-view-grid"></i>
                             </a>
                         </li>
-                        <li class="search-box">
+                        {{-- <li class="search-box">
                             <a class="search-toggle no-pdd-right" href="javascript:void(0);">
                                 <i class="search-icon ti-search pdd-right-10"></i>
                                 <i class="search-icon-close ti-close pdd-right-10"></i>
                             </a>
-                        </li>
+                        </li> --}}
                         </li>
                       </ul>
                       <ul class="nav-right">
@@ -188,7 +191,7 @@
                                   </li>
                             </ul>
                         </li>
-                        <li class="notifications dropdown">
+                        {{-- <li class="notifications dropdown">
                             <span class="counter">2</span>
                             <a href="" class="dropdown-toggle" data-toggle="dropdown">
                                 <i class="ti-bell"></i>
@@ -219,12 +222,8 @@
                                         </span>
                                     </li>
                             </ul>
-                        </li>
-                        <li>
-                            <a class="side-panel-toggle" href="javascript:void(0);">
-                                <i class="ti-align-right"></i>
-                            </a>
-                        </li>
+                        </li> --}}
+                       
                       </ul>
                   </div>
               </div>

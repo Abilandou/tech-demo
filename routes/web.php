@@ -24,6 +24,14 @@ Route::get('home/', 'HomeController@index')->name('home');
  Route::get('category/{category_name}/', 'HomeController@blogCategories')->name('category.with.blog');
  Route::post('contact/us/', 'HomeController@contactUs')->name('user.contact');
 
+ //!Filter items by category
+ Route::get('/items/{item_category}', 'HomeController@itemsByCategory')->name('item.name.by.category');
+ Route::get('/item/{url}', 'HomeController@itemDetail')->name('item.show.detail');
+
+//Enquiry Message
+Route::post('send/enquiry', 'Auth\AdminController@enquiryMessage')->name('client.enquiry.message');
+
+
 // Auth::routes();
 Route::group(['prefix' => 'admin'], function () {
 
@@ -32,11 +40,6 @@ Route::group(['prefix' => 'admin'], function () {
     Route::post('login-admin/', 'Auth\LoginController@adminLogin')->name('admin.login');
     Route::get('register/', 'Auth\RegisterController@adminRegisterForm')->name('admin.register.form');
     Route::post('admin-register/', 'Auth\RegisterController@adminRegister')->name('admin.register');
-    
-
-   
-    
-   
     
    Route::group(['middleware' => ['auth']], function(){
         Route::get('/dashboard', 'Auth\AdminController@dashboard')->name('admin.dashboard');
@@ -85,6 +88,8 @@ Route::group(['prefix' => 'admin'], function () {
             Route::post('item/update/{shop_item_id}', 'Auth\ShopController@updateShopItem')->name('shop.update.item');
             Route::post('/item/delete', 'Auth\ShopController@deleteShopItem')->name('shop.delete.item');
             Route::post('/add/item-attribute/{item_id}', 'Auth\ShopController@addItemAttribute')->name('shop.item.add.attribute');
+            Route::get('/enquiries', 'Auth\ShopController@allEnquiries')->name('shop.enquiries');
+            Route::post('/enquiry/delete', 'Auth\ShopController@deleteEnquiry')->name('shop.delete.enquiry');
 
             //!Item Category
             Route::get('item-categories', 'Auth\ShopController@shopItemCategories')->name('items.categories');

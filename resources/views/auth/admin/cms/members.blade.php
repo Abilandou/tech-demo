@@ -185,7 +185,7 @@
                 </div>
           </div>
         </div>
-        <!-- Modal Form-->
+        <!--Add Modal Form-->
 
         <div class="modal fade" id="addMemberModal">
             <div class="modal-dialog modal-lg" role="document">

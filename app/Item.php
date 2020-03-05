@@ -23,4 +23,9 @@ class Item extends Model
         return $this->hasMany(ItemAttribute::class, 'item_id');
     }
 
+    public function enquiries()
+    {
+        return $this->hasMany(Enquiry::class, 'item_id');
+    }
+
 }

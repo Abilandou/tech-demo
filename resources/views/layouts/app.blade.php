@@ -71,7 +71,7 @@
                                 <li><a href="{{route('shop.items')}}">SHOP</a>
                                     <ul class="sub-menu">
                                         @foreach(\App\ItemCategory::all() as $category)
-                                        <li><a href="service-2.html">{{$category->name}}</a></li>
+                                        <li><a href="{{route('item.name.by.category',['item_category'=>$category->name])}}">{{$category->name}}</a></li>
                                         @endforeach
                                     </ul>
                                 </li>

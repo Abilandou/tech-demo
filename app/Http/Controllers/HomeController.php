@@ -7,7 +7,9 @@ use App\Service;
 use App\Member;
 use App\Blog;
 use App\Category;
+use App\ItemCategory;
 use App\SubService;
+use App\Item;
 use App\Testimonial;
 use Illuminate\Support\Facades\Validator;
 
@@ -108,5 +110,25 @@ class HomeController extends Controller
         ]);
        
         dd($request->all());
+    }
+
+
+    public function itemsByCategory($item_category)
+    {
+        $category = ItemCategory::where(['name'=>$item_category])->first();
+        $category_id = $category->id;
+        $page_name = $item_category;
+        $itemsByCategory = Item::where(['item_category_id'=>$category_id])->paginate(12);
+        return view('home.item_by_category')->with(compact('itemsByCategory', 'page_name', 'item_category'));
+    }
+
+    public function itemDetail($url)
+    {
+        $item = Item::where(['url'=>$url])->first();
+        $page_name = $item->name;
+        $itemCategories = ItemCategory::all();
+        
+        return view('home.item_detail')->with(compact('item','page_name', 'itemCategories'));
+       
     }
 }

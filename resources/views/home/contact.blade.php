@@ -64,7 +64,6 @@
                 </div>
             </div>
             <div class="row">
-                @include('includes.message')
                 <div class="col-lg-8  ml-auto mr-auto">
                     <!-- contact-form-warp Start -->
                     <div class="contact-form-warp pt--60 section-pb">
