@@ -6,7 +6,7 @@
 <div class="main-content">
     <div class="container-fluid">
         <div class="page-title">
-            <h4>Enquiries</h4>
+            <h4>Contacts</h4>
         </div>
         <div class="row">
             <div class="col-md-12">
@@ -17,63 +17,61 @@
                                 <thead>
                                 <tr>
                                     <th>#</th>
-                                    <th>Client Name</th>
-                                    <th>Client Email</th>
-                                    <th>Client Telephone</th>
-                                    <th>Made Enquiry On</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Telephone</th>
                                     <th>Action</th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                     <?php $i = 1; ?>
-                                    @foreach($enquiries as $enquiry)
+                                    @foreach($contacts as $contact)
                                         <tr>
                                             <td>{{ $i++ }}</td>
-                                            <td>{{$enquiry->name}}</td>
-                                            <td>{{$enquiry->email}}</td>
-                                            <td>{{$enquiry->telephone}}</td>
-                                            <td>{{$enquiry->item['name']}}</td>
+                                            <td>{{$contact->name}}</td>
+                                            <td>{{$contact->email}}</td>
+                                            <td>{{$contact->phone}}</td>
                                             <td>
-                                                <button data-toggle="modal" data-target="#enquiry-modal{{$enquiry->id}}" 
+                                                <button data-toggle="modal" data-target="#contact-modal{{$contact->id}}" 
                                                     class="btn btn-sm btn-success">
                                                     <i class="ti-eye">View</i>
                                                 </button>
-                                                <form action="{{ route('shop.delete.enquiry') }}" method="post" class="delete-form" style="display:inline;">
+                                                <form action="{{ route('cms.contact.delete') }}" method="post" class="delete-form" style="display:inline;">
                                                     @csrf
-                                                    <input type="hidden" name="enquiry_id" value="{{$enquiry->id}}" />
-                                                    <button type="submit" title="Delete enquiry" 
+                                                    <input type="hidden" name="contact_id" value="{{$contact->id}}" />
+                                                    <button type="submit" title="Delete contact" 
                                                         class="btn btn-danger btn-sm delete-record"><i class="ti-trash"></i> Delete</button>
                                                 </form>
 
                                             </td>
                                         </tr>
 
-                                        {{-- Get enquiry Details --}}
+                                        {{-- Get contact Details --}}
 
-                                        <div class="modal fade" id="enquiry-modal{{$enquiry->id}}">
+                                        <div class="modal fade" id="contact-modal{{$contact->id}}">
                                             <div class="modal-dialog modal-lg" role="document">
                                                 <div class="modal-content">
                                                     <div class="modal-header">
-                                                        <h4 class="text-center">Detail Enquiry Information.</h4>
+                                                        <h4 class="text-center">Detail contact Information.</h4>
                                                     </div>
                                                     <div class="modal-body">
                                                         <div class="row">
                                                             <div class="col-md-12">
                                                                 
                                                                 <div class="my-2">
-                                                                    <b>Client Name:</b> {{ $enquiry->name }}
+                                                                    <b>Name:</b> {{ $contact->name }}
                                                                 </div>
                                                                 <div class="my-2">
-                                                                    <b>Client Email:</b> {{ $enquiry->email }}
+                                                                    <b>Email:</b> {{ $contact->email }}
                                                                 </div>
                                                                 <div class="my-2">
-                                                                    <b>Client Telephone:</b> {{ $enquiry->telephone }}
+                                                                    <b>Telephone:</b> {{ $contact->phone }}
                                                                 </div>
                                                                 <div class="my-2">
-                                                                    <b>Made Enquiry On:</b> {{ $enquiry->item['name'] }}
+                                                                    <b>Subject: </b> {{ $contact->subject }}
                                                                 </div>
                                                                 <div class="my-2">
-                                                                    <b>Client Message:</b> {{ $enquiry->message }}
+                                                                    <b>Message:</b> {{ $contact->message }}
                                                                 </div>
                                                                
                                                             </div>

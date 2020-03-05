@@ -89,6 +89,9 @@
                             <li>
                                 <a href="{{route('cms.testimonies')}}">Testimonies</a>
                             </li>
+                            <li>
+                                <a href="{{route('cms.contacts')}}">Contacts</a>
+                            </li>
                         </ul>
                       </li>
                     <li class="nav-item dropdown">

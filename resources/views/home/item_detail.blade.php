@@ -48,13 +48,13 @@
                 @if(Session::has('message_error'))
                 <div class="alert alert-error alert-block">
                     <button type="button" class="close" data-dismiss="alert">x</button>
-                        <strong>{!! session('message_error') !!}</strong>
+                        <strong class="text-danger">{!! session('message_error') !!}</strong>
                 </div>
                 @endif         
                 @if(Session::has('message_success'))
                 <div class="alert alert-error alert-block">
                     <button type="button" class="close" data-dismiss="alert">x</button>
-                        <strong>{!! session('message_success') !!}</strong>
+                        <strong class="text-success">{!! session('message_success') !!}</strong>
                 </div>
                 @endif   
 

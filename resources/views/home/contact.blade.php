@@ -67,7 +67,21 @@
                 <div class="col-lg-8  ml-auto mr-auto">
                     <!-- contact-form-warp Start -->
                     <div class="contact-form-warp pt--60 section-pb">
-                        <form id="contact-form" action="{{ route('user.contact') }}" method="post">
+                        
+                        @if(Session::has('message_error'))
+                        <div class="alert alert-error alert-block">
+                            <button type="button" class="close" data-dismiss="alert">x</button>
+                                <strong class="text-danger">{!! session('message_error') !!}</strong>
+                        </div>
+                        @endif         
+                        @if(Session::has('message_success'))
+                        <div class="alert alert-error alert-block">
+                            <button type="button" class="close" data-dismiss="alert">x</button>
+                                <strong class="text-success">{!! session('message_success') !!}</strong>
+                        </div>
+                        @endif 
+
+                        <form action="{{ route('user.contact') }}" method="POST">
                             @csrf
                             <div class="row">
                                 <div class="col-lg-6 col-md-6">
@@ -137,9 +151,9 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="contact-submit-btn text-center">
-                                <button type="submit" class="submit-btn border-radius  default-btn">Send Email</button>
-                                <p class="form-messege"></p>
+                            <div class="float-right">
+                                <button type="submit" class="border-radius  default-btn">Send Email</button>
+                                
                             </div>
                         </form>
                     </div>

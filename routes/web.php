@@ -88,8 +88,14 @@ Route::group(['prefix' => 'admin'], function () {
             Route::post('item/update/{shop_item_id}', 'Auth\ShopController@updateShopItem')->name('shop.update.item');
             Route::post('/item/delete', 'Auth\ShopController@deleteShopItem')->name('shop.delete.item');
             Route::post('/add/item-attribute/{item_id}', 'Auth\ShopController@addItemAttribute')->name('shop.item.add.attribute');
+            
+            //!enquiry
             Route::get('/enquiries', 'Auth\ShopController@allEnquiries')->name('shop.enquiries');
             Route::post('/enquiry/delete', 'Auth\ShopController@deleteEnquiry')->name('shop.delete.enquiry');
+
+            //!contact messages
+            Route::get('/contacts', 'Auth\AdminController@allContacts')->name('cms.contacts');
+            Route::post('/contact/delete', 'Auth\AdminController@deleteContact')->name('cms.contact.delete');
 
             //!Item Category
             Route::get('item-categories', 'Auth\ShopController@shopItemCategories')->name('items.categories');

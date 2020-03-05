@@ -10,8 +10,10 @@ use App\Category;
 use App\ItemCategory;
 use App\SubService;
 use App\Item;
+use App\Contact;
 use App\Testimonial;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Mail;
+use Exception;
 
 class HomeController extends Controller
 {
@@ -30,6 +32,13 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
+
+    public function sendEmail($messageData = [], $to_email, $view_path)
+    {
+        Mail::send($view_path, $messageData, function ($message) use ($to_email) {
+            $message->to($to_email)->subject("Contact Email From TechRepublic Official Site");
+        });
+    }
 
     public function index(){
         $page_name = "Home";
@@ -99,17 +108,48 @@ class HomeController extends Controller
         return view('home.category_with_blogs')->with(compact('categoryBlog', 'page_name', 'category_name'));
     }
 
-    public function contactUs(Request $request){
+    public function contactUs(Request $request)
+    {
 
         $this->validate($request, [
-            'name' => 'required',
+            'name' => 'required|min:3',
             'email' => 'required|email',
             'phone' => 'required|numeric',
-            'message' => 'required',
-            'subject' => 'required'
+            'message' => 'required|min:10',
+            'subject' => 'required|min:3'
         ]);
+        
+        $contact = new Contact();
+        $contact->name = $request->name;
+        $contact->email = $request->email;
+        $contact->phone = $request->phone;
+        $contact->message = $request->message;
+        $contact->subject = $request->subject;
+        $contact->save();
+        if($contact){
+
+            $messageData = [
+                'user_email' => $request->email,
+                'user_name'  => $request->name,
+                'telephone'  => $request->phone,
+                'subject'    => $request->subject,
+                'user_message'  => $request->message,
+            ];
+            $view_path = 'emails.contact_email';
+            // $officialEmail = "info@techrepublic.tech";
+            $officialEmail = "godloveabilandou@gmail.com";
+            //sendEmail function found in MessageServiceTrait.
+            try{
+                $this->sendEmail($messageData, $officialEmail, $view_path);
+                return redirect()->back()->with('message_success', 'Message sent successfully, We will get to you soon');
+            }catch(Exception $ex){
+                return redirect()->back()->with('message_error', 'Unable to send message, Possible internet error. Please check and make sure you are connected to the internet');
+            }
+
+        }
+
        
-        dd($request->all());
+        
     }
 
 
