@@ -17,7 +17,7 @@
                             <h4 class="title">OTHER CATEGORIES</h4>
                             <ul>  
                                 @foreach($categories as $a_category)
-                                    <li><a href="{{route('category.with.blog',['name'=>$a_category->name])}}">@if(($blog->category['name']) != ($a_category->name)){{$a_category->name}} @endif</a></li>
+                                    <li><a href="{{route('category.with.blog',['category_name'=>$a_category->name])}}">@if(($blog->category['name']) != ($a_category->name)){{$a_category->name}} @endif</a></li>
                                 @endforeach
                             </ul>
                         </div>

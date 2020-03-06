@@ -13,9 +13,9 @@
                             <div class="latest-blog-image">
                                 <a href="{{route('single.blog',['url'=>$blog->url])}}">
                                     @if($blog->avatar == null)
-                                        <img src="{{asset('assets/images/techfavicon.jpg')}}" alt="">
+                                        <img src="{{asset('assets/images/techfavicon.jpg')}}" width="300px" height="300px" alt="">
                                     @else
-                                        <img src="{{asset($blog->avatar)}}" alt="">
+                                        <img src="{{asset($blog->avatar)}}" width="300px" height="200px" alt="">
                                     @endif
                                     </a>
                             </div>
