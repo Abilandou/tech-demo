@@ -174,13 +174,13 @@
                             </a>
                             <ul class="dropdown-menu">
                                   <li>
-                                      <a href="">
+                                      <a href="{{route('admin.setting.form')}}">
                                           <i class="ti-settings pdd-right-10"></i>
                                           <span>Setting</span>
                                       </a>
                                   </li>
                                   <li>
-                                      <a href="">
+                                      <a href="{{route('admin.profile.form')}}">
                                           <i class="ti-user pdd-right-10"></i>
                                           <span>Profile</span>
                                       </a>
