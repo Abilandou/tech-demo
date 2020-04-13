@@ -38,7 +38,7 @@
                                                         placeholder="Password" class="form-control 
                                                         border-0 shadow form-control-lg text-violet 
                                                         @error('password') is-invalid @enderror" 
-                                                        name="password" required autocomplete="current-password">
+                                                        name="password" value="{{old('password')}}"equired autocomplete="current-password">
                                                         @error('password')
                                                         <span class="invalid-feedback" role="alert">
                                                             <strong>{{ $message }}</strong>

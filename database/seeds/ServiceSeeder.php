@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Seeder;
 use App\Service;
+use Illuminate\Support\Str;
 
 class ServiceSeeder extends Seeder
 {
@@ -17,27 +18,16 @@ class ServiceSeeder extends Seeder
             return;
         }
 
-        $services = [
-            [
-                'name' => 'networking',
-                'description' => 'THis is for networking',
-                'url' => 'networking',
-            ],
-            [
-                'name' => 'computer Maintenance',
-                'description' => 'This is for computer maintenance',
-                'url' => 'computer-maintenance',
-            ],
-            [
-                'name' => 'computer Maintenance',
-                'description' => 'This is for computer maintenance',
-                'url' => 'computer-maintenance',
-            ],
-        ];
-
-        foreach($services as $service)
-        {
-            Service::create($service);
+        $faker = Faker\Factory::create();
+        for($i = 0; $i < 10; $i++){
+            $service = new Service();
+            $service->name = $faker->text(10);
+            $service->description = $faker->text(300);
+            $service->avatar = $faker->imageUrl();
+            $service->url = Str::slug($faker->name());
+            $service->save();
         }
+
+       
     }
 }

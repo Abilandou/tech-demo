@@ -37,6 +37,8 @@
     <link href="{{ asset('toastr/toastr.min.css') }}" rel="stylesheet">
     <script src="{{ asset('toastr/toastr.min.js') }}"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.css"/>
+     <!-- Image uploader-->
+     <link href="{{ asset('admin/image_uploader_plugin/dist/image-uploader.min.css') }}" rel="stylesheet" type="text/css" />
 </head>
 
   <body>
@@ -276,6 +278,7 @@
        <script src="{{asset('admin/assets/js/table/data-table.js')}}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+    <script src="{{ asset('admin/image_uploader_plugin/dist/image-uploader.min.js')}}"></script>
 
   <script>
       $(document).ready(function () {
@@ -373,7 +376,7 @@
 </script>
   
   @include('includes.message')
-
+@yield('footer_script')
 
 
 

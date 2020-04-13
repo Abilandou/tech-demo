@@ -36,11 +36,7 @@
                                                 <td><img src="{{asset($service->avatar)}}" alt="avatar"
                                                     style="max-width: 2.5rem;" class="img-fluid rounded-circle shadow"></td>
                                                 <td>
-                
-                                                    <button data-toggle="modal" data-target="#service-modal{{$service->id}}" 
-                                                        class="btn btn-sm btn-success">
-                                                        <i class="ti-eye">View</i>
-                                                    </button>
+                                                    <a href="{{route('service.detail',['service_id'=>$service->id])}}" class="btn btn-sm btn-success"><i class="ti-eye">View</i></a>
                                                     <button data-toggle="modal" data-target="#service-edit-modal{{$service->id}}" 
                                                             class="btn btn-sm btn-primary">
                                                             <i class="ti-pencil">Edit</i>
@@ -91,7 +87,7 @@
                                                                         <div class="form-group row">
                                                                             <label for="form-1-1" class="col-md-2 control-label">Service Name</label>
                                                                             <div class="col-md-10">
-                                                                                <input type="text" value="{{$service->name}}" name="name" required 
+                                                                                <input type="text" value="{{$service->name}}" name="name"  
                                                                                 class="form-control" id="form-1-1" placeholder=" Service Name">
                                                                             </div>
                                                                         </div>
@@ -150,22 +146,31 @@
                                 <div class="form-group row">
                                     <label for="form-1-1" class="col-md-2 control-label">Service Name</label>
                                     <div class="col-md-10">
-                                        <input type="text" name="name" required 
-                                        class="form-control" id="form-1-1" placeholder=" Service Name">
+                                        <input type="text" name="name" value="{{old('name')}}"
+                                        class="form-control @error('name') is-invalid @enderror" id="form-1-1" placeholder=" Service Name">
+                                        @error('name')
+                                            <span class="invalid-feedback">{{$message}}</span>
+                                        @enderror
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label for="form-1-5" class="col-md-2 control-label">Description</label>
                                     <div class="col-md-10">
-                                        <textarea class="form-control" name="description"
-                                            rows="10" id="form-1-5"></textarea>
+                                        <textarea class="form-control @error('description') is-invalid @enderror" name="description"
+                                            rows="10" id="form-1-5">{{old('description')}}</textarea>
+                                        @error('description')
+                                            <span class="invalid-feedback">{{$message}}</span>
+                                        @enderror
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label for="form-1-1" class="col-md-2 control-label">Avatar</label>
                                     <div class="col-md-10">
-                                        <input type="file" name="avatar" required 
-                                        class="form-control" id="form-1-1" placeholder=" Avatar">
+                                        <input type="file" name="avatar"  
+                                        class="form-control @error('avatar') is-invalid @enderror" id="form-1-1" placeholder=" Avatar">
+                                        @error('avatar')
+                                            <span class="invalid-feedback">{{$message}}</span>
+                                        @enderror
                                     </div>
                                 </div>
                             
@@ -180,6 +185,14 @@
             </div>
         </div>
     </div>
+
+    <script>
+        $(function(){
+            @if(count($errors) > 0)
+                $('#addServiceModal').modal('show');
+            @endif
+        })
+    </script>
 
 
 @endsection

@@ -5,7 +5,7 @@
 <div class="main-content">
     <div class="container-fluid">
         <div class="page-title">
-            <h4>Team Members</h4>
+            <h4>TESTIMONIES</h4>
         </div>
         <div class="row">
             <div class="col-md-12">
@@ -172,29 +172,41 @@
                             <div class="form-group row">
                                 <label for="form-1-1" class="col-md-2 control-label">Testifier Name</label>
                                 <div class="col-md-10">
-                                    <input type="text" name="name" required 
-                                    class="form-control" id="form-1-1" placeholder=" Testifier Name">
+                                    <input type="text" name="name" value="{{old('name')}}"
+                                    class="form-control @error('name') is-invalid @enderror" id="form-1-1" placeholder=" Testifier Name">
+                                    @error('name')
+                                        <span class="invalid-feedback">{{$message}}</span>
+                                    @enderror
                                 </div>
                             </div>
                             <div class="form-group row">
                                 <label for="form-1-1" class="col-md-2 control-label">Testifier Profession</label>
                                 <div class="col-md-10">
-                                    <input type="text" name="profession" required 
-                                    class="form-control" id="form-1-1" placeholder=" testifier profession">
+                                    <input type="text" name="profession" value="{{old('profession')}}"
+                                    class="form-control @error('profession') is-invalid @enderror" id="form-1-1" placeholder=" testifier profession">
+                                    @error('profession')
+                                        <span class="invalid-feedback">{{$message}}</span>
+                                    @enderror
                                 </div>
                             </div>
                             <div class="form-group row">
                                 <label for="form-1-5" class="col-md-2 control-label">Testimony</label>
                                 <div class="col-md-10">
-                                    <textarea class="form-control" name="testimony"
-                                        rows="10" id="form-1-5"></textarea>
+                                    <textarea class="form-control @error('profession') is-invalid @enderror" name="testimony"
+                                        rows="10" id="form-1-5">{{old('testimony')}}</textarea>
+                                        @error('testimony')
+                                            <span class="invalid-feedback">{{$message}}</span>
+                                        @enderror
                                 </div>
                             </div>
                             <div class="form-group row">
                                 <label for="form-1-1" class="col-md-2 control-label">Avatar</label>
                                 <div class="col-md-10">
-                                    <input type="file" name="avatar" required 
-                                    class="form-control" id="form-1-1" placeholder=" Avatar">
+                                    <input type="file" name="avatar" value="{{old('avatar')}}"
+                                    class="form-control @error('avatar') is-invalid @enderror" id="form-1-1" placeholder=" Avatar">
+                                    @error('avatar')
+                                        <span class="invalid-feedback">{{$message}}</span>
+                                    @enderror
                                 </div>
                             </div>
                         
@@ -209,5 +221,13 @@
         </div>
     </div>
 </div>
+
+<script>
+    $(function(){
+        @if(count($errors) > 0)
+            $('#addTestimonyModal').modal('show');
+        @endif
+    });
+</script>
 
 @endsection

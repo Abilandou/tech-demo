@@ -15,6 +15,7 @@ use App\Testimonial;
 use Illuminate\Support\Facades\Mail;
 use Exception;
 
+
 class HomeController extends Controller
 {
     /**
@@ -63,6 +64,7 @@ class HomeController extends Controller
 
     public function contact(){
         $page_name = "Contact";
+
         return view('home.contact')->with(compact('page_name'));
     }
 
@@ -165,6 +167,7 @@ class HomeController extends Controller
     public function itemDetail($url)
     {
         $item = Item::where(['url'=>$url])->first();
+        
         $page_name = $item->name;
         $itemCategories = ItemCategory::all();
         
@@ -172,3 +175,6 @@ class HomeController extends Controller
        
     }
 }
+
+
+//blue color code for afrotalkblog: #1560bd

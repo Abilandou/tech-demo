@@ -17,9 +17,7 @@ class CreateItemAttributesTable extends Migration
             $table->bigIncrements('id');
             $table->string('the_image');
             $table->bigInteger('item_id')->unsigned();
-            $table->string('size')->nullable();
             $table->string('image_name')->nullable();
-
             $table->foreign('item_id')->references('id')->on('items')->onDelete('cascade');
             $table->timestamps();
         });

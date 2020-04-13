@@ -42,24 +42,6 @@
                     </div>
                 </div>
                 <!-- blog-details-wrapper end -->
-
-                <hr/>
-
-                @if(Session::has('message_error'))
-                <div class="alert alert-error alert-block">
-                    <button type="button" class="close" data-dismiss="alert">x</button>
-                        <strong class="text-danger">{!! session('message_error') !!}</strong>
-                </div>
-                @endif         
-                @if(Session::has('message_success'))
-                <div class="alert alert-error alert-block">
-                    <button type="button" class="close" data-dismiss="alert">x</button>
-                        <strong class="text-success">{!! session('message_success') !!}</strong>
-                </div>
-                @endif   
-
-
-                <p class="text-danger">@if($errors->count() > 0) {{$errors}} @endif</p>
                 <button type="button" data-toggle="modal" 
                     data-target="#enquiryModal" class="btn btn-success btn-block btn-lg">
                     Need This Item? Make An Enquiry
@@ -98,7 +80,7 @@
                             value="{{ old('name') }}" required autocomplete="name" autofocus>
                         @error('name')
                             <span class="invalid-feedback text-center" role="alert">
-                                <strong>{{ $message }}</strong>
+                                <p>{{ $message }}</p>
                             </span>
                         @enderror
                     </div>
@@ -109,7 +91,7 @@
                         value="{{ old('email') }}" required autocomplete="email" autofocus>
                         @error('email')
                             <span class="invalid-feedback text-center" role="alert">
-                                <strong>{{ $message }}</strong>
+                                <p>{{ $message }}</p>
                             </span>
                         @enderror
                     </div>
@@ -120,7 +102,7 @@
                           value="{{ old('telephone') }}" required autocomplete="telephone" autofocus>
                           @error('telephone')
                               <span class="invalid-feedback text-center" role="alert">
-                                  <strong>{{ $message }}</strong>
+                                  <p>{{ $message }}</p>
                               </span>
                           @enderror
                       </div>
@@ -130,7 +112,7 @@
                    
                           <textarea required name="message" rows="5"
                               placeholder="what do have to say?"
-                              class="form-control"></textarea>
+                              class="form-control">{{old('message')}}</textarea>
                         
                       </div>
 
@@ -147,5 +129,13 @@
     </div>
 </div>
 
+<script>
+    $(function () {
+            @if(count($errors) > 0)
+                $('#enquiryModal').modal('show');
+            @endif
+        });
+
+</script>
 
 @endsection

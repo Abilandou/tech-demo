@@ -93,15 +93,18 @@
                                                                         <div class="form-group row">
                                                                             <label for="form-1-1" class="col-md-2 control-label">category Name</label>
                                                                             <div class="col-md-10">
-                                                                                <input type="text" value="{{$category->name}}" name="name" required 
-                                                                                class="form-control" id="form-1-1" placeholder=" category Name">
+                                                                                <input type="text" value="{{old('name', $category->name)}}" minlength="3" required name="name"
+                                                                                class="form-control @error('name') is-invalid @enderror" id="form-1-1" placeholder=" category Name">
+                                                                                @error('name')
+                                                                                    <span class="invalid-feedback">{{$message}}</span>
+                                                                                @enderror
                                                                             </div>
                                                                         </div>
                                                                         <div class="form-group row">
                                                                             <label for="form-1-5" class="col-md-2 control-label">Description</label>
                                                                             <div class="col-md-10">
                                                                                 <textarea class="form-control" name="description"
-                                                                                    rows="10" id="form-1-5">{{$category->description}}</textarea>
+                                                                                    rows="10" id="form-1-5">{{old('decription', $category->description)}}</textarea>
                                                                             </div>
                                                                         </div>
                                                                     </div>
@@ -146,15 +149,19 @@
                             <div class="form-group row">
                                 <label for="form-1-1" class="col-md-2 control-label">category Name</label>
                                 <div class="col-md-10">
-                                    <input type="text" name="name" required 
-                                    class="form-control" id="form-1-1" placeholder=" category Name">
+                                    <input type="text" name="name" value="{{old('name')}}"
+                                    class="form-control @error('name') is-invalid @enderror" id="form-1-1" placeholder=" category Name">
+                                    @error('name')
+                                        <span class="invalid-feedback">{{$message}}</span>
+                                    @enderror
+                                    
                                 </div>
                             </div>
                             <div class="form-group row">
                                 <label for="form-1-5" class="col-md-2 control-label">Description</label>
                                 <div class="col-md-10">
                                     <textarea class="form-control" name="description"
-                                        rows="10" id="form-1-5"></textarea>
+                                        rows="10" id="form-1-5">{{old('description')}}</textarea>
                                 </div>
                             </div>
                         </div>
@@ -168,5 +175,13 @@
         </div>
     </div>
 </div>
+
+<script>
+    $(function(){
+        @if(count($errors) > 0)
+         $('#addcategoryModal').modal('show');
+        @endif
+    });
+</script>
 
 @endsection

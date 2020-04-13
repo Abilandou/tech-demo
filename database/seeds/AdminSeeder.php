@@ -21,7 +21,8 @@ class AdminSeeder extends Seeder
             [
                 'name' => 'admin',
                 'email' => 'admin@techrepublic.com',
-                'password' => \Illuminate\Support\Facades\Hash::make('password')
+                'password' => \Illuminate\Support\Facades\Hash::make('password'),
+                'is_supper_admin' => true,
             ],
             [
                 'name' => 'admin2',

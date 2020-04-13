@@ -10,7 +10,9 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
+// GOOGLE MAP API_KEY=AIzaSyAZHUWM-G8sxOWU9L_eFPUUcyJvVw0rgdM
 
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', 'HomeController@home')->name('home.page');
 Route::get('about/', 'HomeController@about')->name('about.page');
@@ -48,6 +50,7 @@ Route::group(['prefix' => 'admin'], function () {
         Route::post('delete/service/', 'Auth\CmsPagesController@deleteService')->name('admin.delete.service');
         Route::post('add/service/', 'Auth\CmsPagesController@addService')->name('service.add');
         Route::post('update/service/{service_id}/', 'Auth\CmsPagesController@updateService')->name('service.update');
+        Route::get('service/{service_id}', 'Auth\CmsPagesController@serviceDetail')->name('service.detail');
 
         //!Sub Services Area
         Route::get('sub_services/', 'Auth\CmsPagesController@subService')->name('cms.sub_services');
@@ -58,8 +61,10 @@ Route::group(['prefix' => 'admin'], function () {
         //!Team Members
         Route::get('members/', 'Auth\CmsPagesController@members')->name('cms.members');
         Route::post('delete/member/', 'Auth\CmsPagesController@deleteMember')->name('admin.delete.member');
+        Route::get('add/member-form', 'Auth\CmsPagesController@addMemberForm')->name('member.add.form');
         Route::post('add/member/', 'Auth\CmsPagesController@addMember')->name('member.add');
         Route::post('update/member/{member_id}/', 'Auth\CmsPagesController@updateMember')->name('member.update');
+        Route::get('member/{member_id}', 'Auth\CmsPagesController@memberDetail')->name('member.detail');
 
         //!Blog Category
         Route::get('categories/', 'Auth\BlogController@Categories')->name('cms.categories');
@@ -73,6 +78,7 @@ Route::group(['prefix' => 'admin'], function () {
         Route::post('delete/blog/', 'Auth\BlogController@deleteBlog')->name('admin.delete.blog');
         Route::post('add/blog/', 'Auth\BlogController@addBlog')->name('blog.add');
         Route::post('update/blog/{blog_id}/', 'Auth\BlogController@updateBlog')->name('blog.update');
+        Route::get('blogs/{blog_id}', 'Auth\BlogController@blogDetail')->name('blog.detail');
 
         //!Testimonials
         Route::get('testimonies/', 'Auth\CmsPagesController@Testimonials')->name('cms.testimonies');
@@ -86,6 +92,8 @@ Route::group(['prefix' => 'admin'], function () {
         Route::post('item/update/{shop_item_id}', 'Auth\ShopController@updateShopItem')->name('shop.update.item');
         Route::post('/item/delete', 'Auth\ShopController@deleteShopItem')->name('shop.delete.item');
         Route::post('/add/item-attribute/{item_id}', 'Auth\ShopController@addItemAttribute')->name('shop.item.add.attribute');
+        Route::get('items/{item_id}', 'Auth\ShopController@itemDetail')->name('item.detail');
+        Route::post('item-image/delete', 'Auth\ShopController@deleteItemImage')->name('item.image.delete');
         
         //!enquiry
         Route::get('/enquiries', 'Auth\ShopController@allEnquiries')->name('shop.enquiries');

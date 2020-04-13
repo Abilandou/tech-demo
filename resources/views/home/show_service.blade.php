@@ -8,19 +8,6 @@
             <div class="col-lg-4 order-2 order-lg-1">
                 <!-- shop-sidebar-wrap start -->
                 <div class="blog-sidebar-wrap">
-
-                    <!-- shop-sidebar start -->
-                    <div class="blog-sidebar mb--30">
-                        <h4 class="title">Search</h4>
-                        <div class="search-post">
-                            <form  action="#" class="search-blog">
-                                <input type="text" placeholder="Enter Keywords...">
-                                <button class=" btn-search" type="submit"><span class="bi bi-search"></span></button>
-                            </form>
-                        </div>
-                    </div>
-                    <!-- shop-sidebar end -->
-
                     <!-- shop-sidebar start -->
                     @if($services->count() > 1)
                         <div class="blog-sidebar mb--30">
@@ -59,16 +46,20 @@
                         <ul  class="nav nav-pills">
                             <li class="active">
                                 @foreach ($subServices as $sub_service)
-                                    <li class="active ml-3 text-uppercase"><a data-toggle="tab" href="#{{$sub_service->id}}">{{$sub_service->name}}</a></li>
+                                    <li class="active ml-3 text-uppercase headers">
+                                        <a data-toggle="tab" href="#{{$sub_service->id}}">{{$sub_service->name}}</a></li>
                                 @endforeach
                             </li>
                         </ul>
                         <hr/>
                         <div class="tab-content clearfix">
                             @foreach ($subServices as $sub_service)
-                                <div class="tab-pane @if($sub_service) active @endif" id="{{ $sub_service->id }}">
+                                <div class="tab-pane @if(\App\Service::where(['id'=>$sub_service->id])->first()) active @endif" id="{{ $sub_service->id }}">
+                                    <div class="single-case-image">
+                                        <img src="{{asset($sub_service->avatar)}}" class="rounded-circle" width="150px" height="150px" alt="service">
+                                    </div>
                                     <h6>{{$sub_service->name}}</h6>
-                                    <p>{{ $sub_service->description }}</p>
+                                    <p class="text-justify">{{ $sub_service->description }}</p>
                                 </div>
                             @endforeach
                         </div>
@@ -81,9 +72,18 @@
 </div>
 
 <style>
-    .the_headers {
+    .bg-red {
         color:blue;
     }
+    .headers {
+        font-weight: bolder;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color:grey;
+    }
+    .headers:hover{
+        color:blue,
+    }
+    
 </style>
 
 @endsection

@@ -160,7 +160,26 @@
                     <!-- contact-form-warp End -->
                 </div>
             </div>
+          <!-- {{-- <?php
+                // use Cornford\Googlemapper\Facades\MapperFacade;
+                // Mapper::map(53.381128999999990000, -1.470085000000040000, ['eventBeforeLoad' => 'console.log("before load");']);
+                // Mapper::map(
+                //     53.3,
+                //     -1.4,
+                //     [
+                //         'zoom' => 16,
+                //         'draggable' => true,
+                //         'marker' => false,
+                //         'eventAfterLoad' => 'circleListener(maps[0].shapes[0].circle_0);'
+                //     ],
+                // );
+                 // {{Mapper::render()}}
+
+            ?>
+           
+             --}} -->
             <div class="row">
+               
                 <div class="col">
                     <div class="map-area">
                         <div id="map"></div>
@@ -170,7 +189,5 @@
         </div>
     </div>
     <!-- contact Area End -->
-
-
 
 @endsection

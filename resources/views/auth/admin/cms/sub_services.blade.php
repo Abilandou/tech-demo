@@ -13,7 +13,7 @@
                 <div class="card">
                     <div class="card-block">
                         <div class="float-right"> 
-                            <button data-toggle="modal" data-target="#addsub_ServiceModal" 
+                            <button data-toggle="modal" data-target="#addSubServiceModal" 
                             class="btn btn-sm btn-primary" style="float:right">
                             <i class="ti-plus"></i>Add
                             </button>
@@ -72,7 +72,7 @@
                                                                 <div class="col-md-12">
                                                                     <div class="my-4">
                                                                         <b class="mr-3">Avatar:</b> <img src="{{asset($sub_service->avatar)}}" alt="avatar"
-                                                                            class="img-fluid rounded-circle shadow">
+                                                                            class="img-fluid rounded-circle shadow" width="120px" height="120px">
                                                                     </div>
                                                                     <div class="my-2">
                                                                         <b>sub_Service Name:</b> {{ $sub_service->name }}
@@ -106,7 +106,7 @@
                                                                         <div class="form-group row">
                                                                             <label for="form-1-1" class="col-md-2 control-label">sub_Service Name</label>
                                                                             <div class="col-md-10">
-                                                                                <input type="text" value="{{$sub_service->name}}" name="name" required 
+                                                                                <input type="text" value="{{$sub_service->name}}" name="name" required minlength="3"
                                                                                 class="form-control" id="form-1-1" placeholder=" sub_Service Name">
                                                                             </div>
                                                                         </div>
@@ -127,7 +127,7 @@
                                                                         <div class="form-group row">
                                                                             <label for="form-1-5" class="col-md-2 control-label">Description</label>
                                                                             <div class="col-md-10">
-                                                                                <textarea class="form-control" name="description"
+                                                                                <textarea class="form-control" name="description" required minlength="50"
                                                                                     rows="10" id="form-1-5">{{$sub_service->description}}</textarea>
                                                                             </div>
                                                                         </div>
@@ -168,62 +168,80 @@
     </div>
 </div>
     <!-- Add Modal Form-->
-    <div class="modal fade" id="addsub_ServiceModal">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="text-center">ADD A SUB SERVICE</h4>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <form action="{{ route('sub_service.add') }}" method="POST" class="form-horizontal mrg-top-40 pdd-right-30" enctype="multipart/form-data">
-                                @csrf
-                                <div class="form-group row">
-                                    <label for="form-1-1" class="col-md-2 control-label">sub_Service Name</label>
-                                    <div class="col-md-10">
-                                        <input type="text" name="name" required 
-                                        class="form-control" id="form-1-1" placeholder=" sub_Service Name">
-                                    </div>
+
+<div class="modal fade" id="addSubServiceModal">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="text-center">ADD A SUB SERVICE</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <form action="{{ route('sub_service.add') }}" method="POST" class="form-horizontal mrg-top-40 pdd-right-30" enctype="multipart/form-data">
+                            @csrf
+                            <div class="form-group row">
+                                <label for="form-1-1" class="col-md-2 control-label">Name</label>
+                                <div class="col-md-10">
+                                    <input type="text" name="name" value="{{old('name')}}"
+                                    class="form-control @error('name') is-invalid @enderror" id="form-1-1" placeholder=" sub_Service Name">
+                                    @error('name')
+                                        <span class="invalid-feedback">{{$message}}</span>
+                                    @enderror
                                 </div>
-                                <div class="form-group">
-                                    <select name="service_id" required class="form-control selection my-3 py-2 pl-3" >
-                                        <option value="" disabled selected>Select Main Service</option>
-                                        @foreach($services as $service)
-                                            <option value="{{ $service->id }}">{{ $service->name }}</option>
-                                        @endforeach
-                                    </select>
-                                        @error('service_id')
-                                            <span class="invalid-feedback text-center" role="alert">
-                                                <strong>{{ $message }}</strong>
-                                            </span>
+                            </div>
+                            <div class="form-group">
+                                <select name="main_service" class="form-control @error('main_service') is-invalid @enderror" >
+                                    <option value="" disabled selected>Select Main Service</option>
+                                    @foreach($services as $service)
+                                        <option value="{{ $service->id }}" {{(old('main_service')==$service->id) ? 'selected': '' }}>{{ $service->name }}</option>
+                                    @endforeach
+                                </select>
+                                @error('main_service')
+                                    <span class="invalid-feedback text-center" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+                            <div class="form-group row">
+                                <label for="form-1-5" class="col-md-2 control-label">Description</label>
+                                <div class="col-md-10">
+                                    <textarea class="form-control @error('descrpition') is-invalid @enderror" minlength="50" name="description" required
+                                        rows="10" id="form-1-5">{{old('description')}}</textarea>
+                                        @error('description')
+                                            <span class="invalid-feedback">{{$message}}</span>
                                         @enderror
                                 </div>
-                                <div class="form-group row">
-                                    <label for="form-1-5" class="col-md-2 control-label">Description</label>
-                                    <div class="col-md-10">
-                                        <textarea class="form-control" name="description"
-                                            rows="10" id="form-1-5"></textarea>
-                                    </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label for="form-1-1" class="col-md-2 control-label">Avatar</label>
-                                    <div class="col-md-10">
-                                        <input type="file" name="avatar" required 
-                                        class="form-control" id="form-1-1" placeholder=" Avatar">
-                                    </div>
-                                </div>
-                            
                             </div>
-                            <div class="modal-footer">
-                            <button type="button" data-dismiss="modal" class="btn btn-secondary">Close</button>
-                            <button type="submit" class="btn btn-primary">Add</button>
-                        </form>
+                            <div class="form-group row">
+                                <label for="form-1-1" class="col-md-2 control-label">Avatar</label>
+                                <div class="col-md-10">
+                                    <input type="file" name="avatar" value="{{old('avatar')}}"
+                                    class="form-control @error('avatar') is-invalid @enderror about-us-content" id="form-1-1" placeholder=" Avatar">
+                                    @error('avatar')
+                                        <span class="invalid-feedback">{{$message}}</span>
+                                    @enderror
+                                </div>
+                            </div>
+                        
                         </div>
+                        <div class="modal-footer">
+                        <button type="button" data-dismiss="modal" class="btn btn-secondary">Close</button>
+                        <button type="submit" class="btn btn-primary">Add</button>
+                    </form>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
+
+<script>
+    $(function(){
+        @if(count($errors) > 0)
+            $('#addSubServiceModal').modal('show');
+        @endif
+    });
+</script>
    
 @endsection

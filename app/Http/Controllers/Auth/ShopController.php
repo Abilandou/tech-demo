@@ -5,10 +5,13 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Item;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use App\ItemCategory;
 use App\ItemAttribute;
 use Illuminate\Support\Facades\Storage;
 use App\Enquiry;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class ShopController extends Controller
 {
@@ -82,12 +85,27 @@ class ShopController extends Controller
         return view('auth.admin.shop.shop_items')->with(compact('shopItems', 'itemCategories'));
     }
 
-    public function deleteShopItem(Request $request){
+    public function deleteShopItem(Request $request)
+    {
 
         $shop_item_id = $request->shop_item_id;
-        $shopItem = Item::where(['id'=>$shop_item_id])->delete();
+        $shopItem = Item::where(['id'=>$shop_item_id])->first();
         if($shopItem){
-            
+            //get the image and delete it from the server
+            $item_image = $shopItem->avatar;
+            unlink($item_image);
+
+            //also look for this items images on the item attribute table and delete the images from the server
+            $iAttributes = ItemAttribute::where(['item_id'=>$shop_item_id])->get();
+            foreach($iAttributes as $attr){
+                $images = $attr->the_image;
+                //remove all of them from the server
+                unlink($images);
+                //delete all of them from the database
+                $attr->delete();
+            }
+            //finally delete the shop item.
+            $shopItem->delete();
             session()->flash('success', "shop Item Deleted Successfully");
             return redirect()->back();
         }else{
@@ -100,32 +118,56 @@ class ShopController extends Controller
 
     public function addShopItem(Request $request)
     {
-        $this->validate($request, [
+        $validator = Validator::make($request->all(), [
             'name' => 'required|min:3|unique:items',
-            'avatar' => 'required'
+            'item_category' => 'required',
+            'description' => 'required',
+            'avatar'  => 'required|max:5068'
         ]);
 
-        $item = new Item();
-        $item->name = $request->name;
-        $item->description = $request->description;
-        $item->url = strtolower(str_replace(' ', '-', $request->name));
-        $item->item_category_id = $request->item_category_id;
-        if($request->hasFile('avatar')){
-             // filename with extension
-             $fileNameWithExt = $request->file('avatar')->getClientOriginalName();
-             // filename
-             $filename = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
-             // extension
-             $extension = $request->file('avatar')->getClientOriginalExtension();
-             // filename to store
-             $fileNameToStore = $filename.'_'.time().'.'.$extension;
-
-             $path = $request->file('avatar')->move('avatars/items/', $fileNameToStore);
-
-             $path_name = $path->getPathname();
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
         }
-        $item->avatar = $path_name;
-        $item->save();
+         //Get all the clients uploaded files and validate them to make sure they are of correct type.
+        $extension =$request->file('avatar')->getClientOriginalExtension();
+        $allowedFileExtension=['jpg','png', 'jpeg', 'gif', 'svg'];
+        $check = in_array($extension, $allowedFileExtension);
+
+        if($check){
+            $item = new Item();
+            $item->name = $request->name;
+            $item->description = $request->description;
+            $item->url = Str::slug($request->name).'-'.time();
+            $item->item_category_id = $request->item_category;
+            if($request->hasFile('avatar')){
+                 // filename with extension
+                 $fileNameWithExt = $request->file('avatar')->getClientOriginalName();
+                 // filename
+                 $filename = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
+                 // extension
+                 $extension = $request->file('avatar')->getClientOriginalExtension();
+                 // filename to store
+                 $fileNameToStore = $filename.'_'.time().'.'.$extension;
+    
+                 $path = $request->file('avatar')->move('avatars/items/', $fileNameToStore);
+    
+                 $path_name = $path->getPathname();
+            }
+            $item->avatar = $path_name;
+            $item->save();
+            session()->flash('success', 'Item Added successfully');
+            return redirect()->back();
+
+        }else{
+            $validator->errors()->add('avatar', "Avatar Should be of either type , ['jpg','png','bmp', 'jpeg', 'gif', 'svg']");
+            return redirect()->back()
+                    ->withErrors($validator)
+                    ->withInput();
+        }
+
+       
         if($item){
             session()->flash('success', 'item Added successfully');
             return redirect()->back();
@@ -138,103 +180,138 @@ class ShopController extends Controller
     public function updateShopItem(Request $request, $shop_item_id)
     {
         
-        $this->validate($request, [
+        $validator = Validator::make($request->all(), [
             'name' => 'required|min:3',
+            'item_category' => 'required',
+            'description' => 'required',
+            'avatar'  => 'max:5068'
         ]);
 
-         //Handle file upload for the avatar
-         if($request->hasFile('avatar')){
-            // filename with extension
-            $fileNameWithExt = $request->file('avatar')->getClientOriginalName();
-            // filename
-            $filename = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
-            // extension
-            $extension = $request->file('avatar')->getClientOriginalExtension();
-            // filename to store
-            $fileNameToStore = $filename.'_'.time().'.'.$extension;
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+         //Give a default image extension of png
+         $extension = $request->avatar == null ? 'png': $request->avatar->getClientOriginalExtension();
+ 
+         $allowedFileExtension=['jpg','png', 'jpeg', 'gif', 'svg'];
+         $check = in_array($extension, $allowedFileExtension);
+         if($check){
+            //Handle file upload for the avatar
+            if($request->hasFile('avatar')){
 
-            $path = $request->file('avatar')->move('avatars/items/', $fileNameToStore);
+                //get item old image and delete it from the server
+                $char = Item::where(['id'=>$shop_item_id])->first();
+                if($char){
+                    $image = $char->avatar;
+                    unlink($image);
+                }
 
-            $path_name = $path->getPathname();
-       }
-       // Incase no image was not selected when trying to update profile information, maintain the previous image.
-       if(empty($path_name)){
-           $the_path = Item::where(['id'=>$shop_item_id])->first();
-           $get_path = $the_path->avatar;
-           $path_name = $get_path;
-       }
-       $item = Item::where(['id'=>$shop_item_id])->update([
-           'name' => $request->name,
-           'description' => $request->description,
-           'url'  => strtolower(str_replace(' ', '-', $request->name)),
-           'item_category_id' => $request->item_category_id,
-           'avatar' => $path_name
-       ]);
-       if($item){
-           session()->flash('success', 'item Updated successfully');
+                // filename with extension
+                $fileNameWithExt = $request->file('avatar')->getClientOriginalName();
+                // filename
+                $filename = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
+                // extension
+                $extension = $request->file('avatar')->getClientOriginalExtension();
+                // filename to store
+                $fileNameToStore = $filename.'_'.time().'.'.$extension;
+
+                $path = $request->file('avatar')->move('avatars/items/', $fileNameToStore);
+
+                $path_name = $path->getPathname();
+            }
+            // Incase no image was not selected when trying to update profile information, maintain the previous image.
+            if(empty($path_name)){
+                $the_path = Item::where(['id'=>$shop_item_id])->first();
+                $get_path = $the_path->avatar;
+                $path_name = $get_path;
+            }
+            Item::where(['id'=>$shop_item_id])->update([
+                'name' => $request->name,
+                'description' => $request->description,
+                'url'  => Str::slug( $request->name).'-'.time(),
+                'item_category_id' => $request->item_category,
+                'avatar' => $path_name
+            ]);
+            session()->flash('success', 'item Updated successfully');
            return redirect()->back();
-       }else{
-           session()->flash('error', 'Unable to update item, Possible internet error');
-           return redirect()->back();
-       }
-
+         }else{
+            $validator->errors()->add('avatar', "Avatar Should be of either type , ['jpg','png','bmp', 'jpeg', 'gif', 'svg']");
+            return redirect()->back()
+                    ->withErrors($validator)
+                    ->withInput();
+         }
     }
 
-    public function addItemAttribute(Request $request, $item_id) {
+    public function itemDetail($item_id){
+        
+        $item = Item::where(['id'=>$item_id])->first();
+        if($item){
+            //item images
+            $iImages = ItemAttribute::where(['item_id'=>$item_id])->get();
+            $itemCategories = ItemCategory::all();
+            return view('auth.admin.shop.item-detail')->with(compact('item', 'iImages', 'itemCategories'));
+        }else{
+            abort(404);
+        }
+    }
 
-        $this->validate($request, [
-            'the_image' => 'required'
+    public function addItemAttribute(Request $request, $item_id) 
+    {
+        $validator = Validator::make($request->all(), [
+            'filename' => 'required|max:5096',
         ]);
 
-        if ($request->hasFile('the_image')) {
-            dd($request->the_image);
-            foreach ($request->the_image as $file) {
-                $filename = $file->getClientOriginalName();
-                $extension = $file->getClientOriginalExtension();
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+        //GEt all the clients uploaded files and validate them to make sure they are of correct type.
+        foreach ($request->filename as $file) {
+            $extension =$file->getClientOriginalExtension();
+        }
+        $allowedFileExtension=['jpg','png', 'jpeg', 'gif', 'svg'];
+        $check = in_array($extension, $allowedFileExtension);
 
-                $fileNameToStore = $filename.'.'.time().'.'.$extension;
-
-                // $path = $request->file('the_image')->move('avatars/items/', $fileNameToStore);
-                $path = $file->storeAs('public/avatars/items/', $fileNameToStore);
-
-                // $path_name = $path->getPathname();
-    
-                $attribute = new ItemAttribute();
-    
-                $size = Storage::size($path);
-                if ($size >= 1000000) {
-                    $attribute->size = round($size/1000000) . 'MB';
-                } elseif ($size >= 1000) {
-                    $attribute->size = round($size/1000) . 'KB';
-                } else {
-                    $attribute->size = $size;
+        if($check){
+            try{
+                DB::beginTransaction();
+                if ($request->hasFile('filename')) {
+                    foreach ($request->filename as $file) {
+                        $filename = $file->getClientOriginalName();
+                        $extension = $file->getClientOriginalExtension();
+        
+                        $fileNameToStore = $filename.'.'.time().'.'.$extension;
+                        $path = $file->move('avatars/item-image/', $fileNameToStore);
+                        $path_name = $path->getPathname();
+            
+                        $attribute = new ItemAttribute();
+            
+                       
+                        $attribute->item_id = $item_id;
+                        $attribute->image_name = $filename;
+                        $attribute->the_image = $path_name;
+                        $attribute->save();
+                    }
+                
                 }
-                $attribute->item_id = $item_id;
-                $attribute->the_image = $path;
-                $attribute->save();
+                DB::commit();
+                session()->flash('success', 'Item Images added successfully');
+                return redirect()->back();
+            }catch(\Illuminate\Database\QueryException $e){
+                DB::rollBack();
+                session()->flash('error', 'Unable to process Database query, Check and make sure your fields are all correct');
+                return redirect()->back()->withInput();
             }
-        
-        }
-        if($attribute){
-            session()->flash('success', 'Item attributes added successfully');
-            return redirect()->back();
         }else{
-            session()->flash('error', 'Unable to add item attributes');
-            return redirect()->back();
+            $validator->errors()->add('filename', "Item Images Should be of either type , ['jpg','png','bmp', 'jpeg', 'gif', 'svg']");
+            return redirect()->back()
+                    ->withErrors($validator)
+                    ->withInput();
         }
-
-
-
-
-
-
-
-
-
-
         
-       
-
     }
 
     public function allEnquiries()
@@ -256,6 +333,22 @@ class ShopController extends Controller
             return redirect()->back();
         }
 
+    }
+
+    public function deleteItemImage(Request $request)
+    {
+        $image_id = $request->image_id;
+        $img = ItemAttribute::where(['id'=>$image_id])->first();
+        if($img){
+            //get the image and delete it from the server
+            $the_image = $img->the_image;
+            unlink($the_image);
+            $img->delete();
+            session()->flash('success', 'Item Image deleted Successfully');
+            return redirect()->back();
+        }else{
+            abort(404);
+        }
     }
 
 }

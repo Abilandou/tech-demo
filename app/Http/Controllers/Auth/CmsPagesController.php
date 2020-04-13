@@ -8,6 +8,9 @@ use App\Service;
 use App\SubService;
 use App\Member;
 use App\Testimonial;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 
 class CmsPagesController extends Controller
 {
@@ -23,9 +26,12 @@ class CmsPagesController extends Controller
     public function deleteService(Request $request){
 
         $service_id = $request->service_id;
-        $service = Service::where(['id'=>$service_id])->delete();
+        $service = Service::where(['id'=>$service_id])->first();
         if($service){
-            
+            $char = Service::where(['id'=>$service_id])->first();
+            $image = $char->avatar;
+            unlink($image);
+            $service->delete();
             session()->flash('success', "Service Deleted Successfully");
             return redirect()->back();
         }else{
@@ -38,79 +44,125 @@ class CmsPagesController extends Controller
 
     public function addService(Request $request)
     {
-        $this->validate($request, [
+
+        $validator = Validator::make($request->all(), [
             'name' => 'required|min:3|unique:services',
+            'description' => 'required|min:50',
+            'avatar'  => 'required|max:5068'
         ]);
 
-        $service = new Service();
-        $service->name = $request->name;
-        $service->description = $request->description;
-        $service->url = strtolower(str_replace(' ', '-', $request->name));
-        if($request->hasFile('avatar')){
-             // filename with extension
-             $fileNameWithExt = $request->file('avatar')->getClientOriginalName();
-             // filename
-             $filename = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
-             // extension
-             $extension = $request->file('avatar')->getClientOriginalExtension();
-             // filename to store
-             $fileNameToStore = $filename.'_'.time().'.'.$extension;
-
-             $path = $request->file('avatar')->move('avatars/services/', $fileNameToStore);
-
-             $path_name = $path->getPathname();
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
         }
-        $service->avatar = $path_name;
-        $service->save();
-        if($service){
+         //GEt all the clients uploaded files and validate them to make sure they are of correct type.
+        $extension =$request->file('avatar')->getClientOriginalExtension();
+        $allowedFileExtension=['jpg','png', 'jpeg', 'gif', 'svg'];
+        $check = in_array($extension, $allowedFileExtension);
+        if($check){
+            $service = new Service();
+            $service->name = $request->name;
+            $service->description = $request->description;
+            $service->url = strtolower(str_replace(' ', '-', $request->name));
+            if($request->hasFile('avatar')){
+                // filename with extension
+                $fileNameWithExt = $request->file('avatar')->getClientOriginalName();
+                // filename
+                $filename = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
+                // extension
+                $extension = $request->file('avatar')->getClientOriginalExtension();
+                // filename to store
+                $fileNameToStore = $filename.'_'.time().'.'.$extension;
+
+                $path = $request->file('avatar')->move('avatars/services/', $fileNameToStore);
+
+                $path_name = $path->getPathname();
+            }
+            $service->avatar = $path_name;
+            $service->save();
             session()->flash('success', 'Service Added successfully');
             return redirect()->back();
         }else{
-            session()->flash('error', 'Unable to add service, possible internet error');
-            return redirect()->back();
+            $validator->errors()->add('avatar', "Avatar Should be of either type , ['jpg','png','bmp', 'jpeg', 'gif', 'svg']");
+            return redirect()->back()
+                    ->withErrors($validator)
+                    ->withInput();
+        }
+    }
+
+    public function serviceDetail($service_id)
+    {
+        $service = Service::where(['id'=>$service_id])->first();
+        if($service){
+            return view('auth.admin.cms.service_detail')->with(compact('service'));
+        }else{
+            abort(404);
         }
     }
 
     public function updateService(Request $request, $service_id)
     {
-        $this->validate($request, [
+        $validator = Validator::make($request->all(), [
             'name' => 'required|min:3',
+            'description' => 'required|min:50',
+            'avatar'  => 'max:5068'
         ]);
 
-         //Handle file upload for the avatar
-         if($request->hasFile('avatar')){
-            // filename with extension
-            $fileNameWithExt = $request->file('avatar')->getClientOriginalName();
-            // filename
-            $filename = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
-            // extension
-            $extension = $request->file('avatar')->getClientOriginalExtension();
-            // filename to store
-            $fileNameToStore = $filename.'_'.time().'.'.$extension;
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+         //Give a default image extension of png
+         $extension = $request->avatar == null ? 'png': $request->avatar->getClientOriginalExtension();
+ 
+         $allowedFileExtension=['jpg','png', 'jpeg', 'gif', 'svg'];
+         $check = in_array($extension, $allowedFileExtension);
 
-            $path = $request->file('avatar')->move('avatars/services/', $fileNameToStore);
+         if($check){
+            //Handle file upload for the avatar
+            if($request->hasFile('avatar')){
 
-            $path_name = $path->getPathname();
-       }
-       // Incase no image was not selected when trying to update profile information, maintain the previous image.
-       if(empty($path_name)){
-           $the_path = Service::where(['id'=>$service_id])->first();
-           $get_path = $the_path->avatar;
-           $path_name = $get_path;
-       }
-       $service = Service::where(['id'=>$service_id])->update([
-           'name' => $request->name,
-           'description' => $request->description,
-           'url'  => strtolower(str_replace(' ', '-', $request->name)),
-           'avatar' => $path_name
-       ]);
-       if($service){
-           session()->flash('success', 'Service Updated successfully');
-           return redirect()->back();
-       }else{
-           session()->flash('error', 'Unable to update service, Possible internet error');
-           return redirect()->back();
-       }
+                //get image and delete it from the server
+                $char = Service::where(['id'=>$service_id])->first();
+                if($char){
+                    $image = $char->avatar;
+                    unlink($image);
+                }
+                // filename with extension
+                $fileNameWithExt = $request->file('avatar')->getClientOriginalName();
+                // filename
+                $filename = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
+                // extension
+                $extension = $request->file('avatar')->getClientOriginalExtension();
+                // filename to store
+                $fileNameToStore = $filename.'_'.time().'.'.$extension;
+
+                $path = $request->file('avatar')->move('avatars/services/', $fileNameToStore);
+
+                $path_name = $path->getPathname();
+            }
+            // Incase no image was not selected when trying to update profile information, maintain the previous image.
+            if(empty($path_name)){
+                $the_path = Service::where(['id'=>$service_id])->first();
+                $get_path = $the_path->avatar;
+                $path_name = $get_path;
+            }
+            Service::where(['id'=>$service_id])->update([
+                'name' => $request->name,
+                'description' => $request->description,
+                'url'  => strtolower(str_replace(' ', '-', $request->name)),
+                'avatar' => $path_name
+            ]);
+            session()->flash('success', 'Service Updated successfully');
+            return redirect()->back();
+         }else{
+            $validator->errors()->add('avatar', "Avatar Should be of either type , ['jpg','png','bmp', 'jpeg', 'gif', 'svg']");
+            return redirect()->back()
+                    ->withErrors($validator)
+                    ->withInput();
+         }
 
     }
 
@@ -127,9 +179,14 @@ class CmsPagesController extends Controller
     {
 
         $sub_service_id = $request->sub_service_id;
-        $sub_service = Service::where(['id'=>$sub_service_id])->delete();
+        $sub_service = SubService::where(['id'=>$sub_service_id])->first();
         if($sub_service){
-            
+
+            //get image and delete it from server too
+            $char = SubService::where(['id'=>$sub_service_id])->first();
+            $image = $char->avatar;
+            unlink($image);
+            $sub_service->delete();
             session()->flash('success', "Service Deleted Successfully");
             return redirect()->back();
         }else{
@@ -142,50 +199,86 @@ class CmsPagesController extends Controller
 
     public function addSubService(Request $request)
     {
-        $this->validate($request, [
+
+        $validator = Validator::make($request->all(), [
             'name' => 'required|min:3|unique:sub_services',
-            'service_id' => 'required'
+            'main_service' => 'required',
+            'description' => 'required|min:50',
+            'avatar' => 'required|max:5069'
         ]);
 
-        $sub_service = new SubService();
-        $sub_service->name = $request->name;
-        $sub_service->service_id = $request->service_id;
-        $sub_service->description = $request->description;
-        $sub_service->url = strtolower(str_replace(' ', '-', $request->name));
-        if($request->hasFile('avatar')){
-             // filename with extension
-             $fileNameWithExt = $request->file('avatar')->getClientOriginalName();
-             // filename
-             $filename = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
-             // extension
-             $extension = $request->file('avatar')->getClientOriginalExtension();
-             // filename to store
-             $fileNameToStore = $filename.'_'.time().'.'.$extension;
-
-             $path = $request->file('avatar')->move('avatars/sub_services/', $fileNameToStore);
-
-             $path_name = $path->getPathname();
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
         }
-        $sub_service->avatar = $path_name;
-        $sub_service->save();
-        if($sub_service){
-            session()->flash('success', 'Service Added successfully');
+         //GEt all the clients uploaded files and validate them to make sure they are of correct type.
+        $extension =$request->file('avatar')->getClientOriginalExtension();
+        $allowedFileExtension=['jpg','png', 'jpeg', 'gif', 'svg'];
+        $check = in_array($extension, $allowedFileExtension);
+
+        if($check){
+            $sub_service = new SubService();
+            $sub_service->name = $request->name;
+            $sub_service->service_id = $request->main_service;
+            $sub_service->description = $request->description;
+            $sub_service->url = Str::slug($request->name).'-'.time();
+            if($request->hasFile('avatar')){
+                // filename with extension
+                $fileNameWithExt = $request->file('avatar')->getClientOriginalName();
+                // filename
+                $filename = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
+                // extension
+                $extension = $request->file('avatar')->getClientOriginalExtension();
+                // filename to store
+                $fileNameToStore = $filename.'_'.time().'.'.$extension;
+
+                $path = $request->file('avatar')->move('avatars/sub_services/', $fileNameToStore);
+
+                $path_name = $path->getPathname();
+            }
+            $sub_service->avatar = $path_name;
+            $sub_service->save();
+            session()->flash('success', 'subService Added successfully');
             return redirect()->back();
         }else{
-            session()->flash('error', 'Unable to add service, possible internet error');
-            return redirect()->back();
+            $validator->errors()->add('avatar', "Avatar Should be of either type , ['jpg','png','bmp', 'jpeg', 'gif', 'svg']");
+            return redirect()->back()
+                    ->withErrors($validator)
+                    ->withInput();
         }
     }
 
     public function updateSubService(Request $request, $sub_service_id)
     {
-        $this->validate($request, [
+        $validator = Validator::make($request->all(), [
             'name' => 'required|min:3',
-            'service_id' => 'required'
+            'avatar' => 'max:5069'
         ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+         //Give a default image extension of png
+         $extension = $request->avatar == null ? 'png': $request->avatar->getClientOriginalExtension();
+ 
+         $allowedFileExtension=['jpg','png', 'jpeg', 'gif', 'svg'];
+         $check = in_array($extension, $allowedFileExtension);
+
+         if($check){
 
          //Handle file upload for the avatar
          if($request->hasFile('avatar')){
+
+            //Get sub service image and delete it from the server
+            $char = SubService::where(['id'=>$sub_service_id])->first();
+            if($char){
+                $image = $char->avatar;
+                unlink($image);
+            }
             // filename with extension
             $fileNameWithExt = $request->file('avatar')->getClientOriginalName();
             // filename
@@ -198,28 +291,28 @@ class CmsPagesController extends Controller
             $path = $request->file('avatar')->move('avatars/sub_services/', $fileNameToStore);
 
             $path_name = $path->getPathname();
-       }
-       // Incase no image was not selected when trying to update profile information, maintain the previous image.
-       if(empty($path_name)){
-           $the_path = SubService::where(['id'=>$sub_service_id])->first();
-           $get_path = $the_path->avatar;
-           $path_name = $get_path;
-       }
-       $sub_service = SubService::where(['id'=>$sub_service_id])->update([
-           'name' => $request->name,
-           'description' => $request->description,
-           'service_id' => $request->service_id,
-           'url'  => strtolower(str_replace(' ', '-', $request->name)),
-           'avatar' => $path_name
-       ]);
-       if($sub_service){
-           session()->flash('success', 'Service Updated successfully');
-           return redirect()->back();
-       }else{
-           session()->flash('error', 'Unable to update service, Possible internet error');
-           return redirect()->back();
-       }
-
+            }
+            // Incase no image was not selected when trying to update profile information, maintain the previous image.
+            if(empty($path_name)){
+                $the_path = SubService::where(['id'=>$sub_service_id])->first();
+                $get_path = $the_path->avatar;
+                $path_name = $get_path;
+            }
+            SubService::where(['id'=>$sub_service_id])->update([
+                'name' => $request->name,
+                'description' => $request->description,
+                'service_id' => $request->service_id,
+                'url'  => Str::slug($request->name).'-'.time(),
+                'avatar' => $path_name
+            ]);
+            session()->flash('success', 'Service Updated successfully');
+            return redirect()->back();
+         }else{
+            $validator->errors()->add('avatar', "Avatar Should be of either type , ['jpg','png','bmp', 'jpeg', 'gif', 'svg']");
+            return redirect()->back()
+                    ->withErrors($validator)
+                    ->withInput();
+         }
     }
 
 
@@ -233,9 +326,12 @@ class CmsPagesController extends Controller
     public function deleteTestimony(Request $request){
 
         $testimony_id = $request->testimony_id;
-        $testimony = Testimonial::where(['id'=>$testimony_id])->delete();
+        $testimony = Testimonial::where(['id'=>$testimony_id])->first();
         if($testimony){
-            
+
+            $char = Testimonial::where(['id'=>$testimony_id])->first();
+            unlink($char->avatar);
+            $testimony->delete();
             session()->flash('success', "testimony Deleted Successfully");
             return redirect()->back();
         }else{
@@ -248,38 +344,52 @@ class CmsPagesController extends Controller
 
     public function addTestimony(Request $request)
     {
-        $this->validate($request, [
+        $validator = Validator::make($request->all(), [
             'name' => 'required|min:3|unique:testimonials',
             'profession' => 'required|min:3|',
-            'testimony' => 'required'
+            'testimony' => 'required',
+            'avatar'  => 'required|max:5068'
         ]);
 
-        $testimony = new Testimonial();
-        $testimony->name = $request->name;
-        $testimony->profession = $request->profession;
-        $testimony->testimony = $request->testimony;
-        if($request->hasFile('avatar')){
-             // filename with extension
-             $fileNameWithExt = $request->file('avatar')->getClientOriginalName();
-             // filename
-             $filename = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
-             // extension
-             $extension = $request->file('avatar')->getClientOriginalExtension();
-             // filename to store
-             $fileNameToStore = $filename.'_'.time().'.'.$extension;
-
-             $path = $request->file('avatar')->move('avatars/testimonies/', $fileNameToStore);
-
-             $path_name = $path->getPathname();
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
         }
-        $testimony->avatar = $path_name;
-        $testimony->save();
-        if($testimony){
+         //GEt all the clients uploaded files and validate them to make sure they are of correct type.
+        $extension =$request->file('avatar')->getClientOriginalExtension();
+        $allowedFileExtension=['jpg','png', 'jpeg', 'gif', 'svg'];
+        $check = in_array($extension, $allowedFileExtension);
+
+        if($check){
+            $testimony = new Testimonial();
+            $testimony->name = $request->name;
+            $testimony->profession = $request->profession;
+            $testimony->testimony = $request->testimony;
+            if($request->hasFile('avatar')){
+                // filename with extension
+                $fileNameWithExt = $request->file('avatar')->getClientOriginalName();
+                // filename
+                $filename = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
+                // extension
+                $extension = $request->file('avatar')->getClientOriginalExtension();
+                // filename to store
+                $fileNameToStore = $filename.'_'.time().'.'.$extension;
+
+                $path = $request->file('avatar')->move('avatars/testimonies/', $fileNameToStore);
+
+                $path_name = $path->getPathname();
+            }
+            $testimony->avatar = $path_name;
+            $testimony->save();
             session()->flash('success', 'testimony Added successfully');
             return redirect()->back();
+
         }else{
-            session()->flash('error', 'Unable to add testimony, possible internet error');
-            return redirect()->back();
+            $validator->errors()->add('avatar', "Avatar Should be of either type , ['jpg','png','bmp', 'jpeg', 'gif', 'svg']");
+            return redirect()->back()
+                    ->withErrors($validator)
+                    ->withInput();
         }
     }
 
@@ -287,47 +397,70 @@ class CmsPagesController extends Controller
     public function updateTestimony(Request $request, $testimony_id)
     {
         
-        $this->validate($request, [
+        $validator = Validator::make($request->all(), [
             'name' => 'required|min:3',
             'profession' => 'required|min:3|',
-            'testimony' => 'required'
+            'testimony' => 'required',
+            'avatar'  => 'max:5068'
         ]);
 
-         //Handle file upload for the avatar
-         if($request->hasFile('avatar')){
-            // filename with extension
-            $fileNameWithExt = $request->file('avatar')->getClientOriginalName();
-            // filename
-            $filename = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
-            // extension
-            $extension = $request->file('avatar')->getClientOriginalExtension();
-            // filename to store
-            $fileNameToStore = $filename.'_'.time().'.'.$extension;
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+          //Validate Image extension.
+         //Give a default image extension of png
+         $extension = $request->avatar == null ? 'png': $request->avatar->getClientOriginalExtension();
+ 
+         $allowedFileExtension=['jpg','png', 'jpeg', 'gif', 'svg'];
+         $check = in_array($extension, $allowedFileExtension);
 
-            $path = $request->file('avatar')->move('avatars/testimonies/', $fileNameToStore);
+         if($check){
+             //Handle file upload for the avatar
+            if($request->hasFile('avatar')){
 
-            $path_name = $path->getPathname();
-       }
-       // Incase no image was not selected when trying to update profile information, maintain the previous image.
-       if(empty($path_name)){
-           $the_path = Testimonial::where(['id'=>$testimony_id])->first();
-           $get_path = $the_path->avatar;
-           $path_name = $get_path;
-       }
-       $testimony = Testimonial::where(['id'=>$testimony_id])->update([
-           'name' => $request->name,
-           'profession' => $request->profession,
-           'testimony' => $request->testimony,
-           'avatar' => $path_name
-       ]);
-       if($testimony){
-           session()->flash('success', 'testimony Updated successfully');
-           return redirect()->back();
-       }else{
-           session()->flash('error', 'Unable to update testimony, Possible internet error');
-           return redirect()->back();
-       }
+                 //delete old image from server
+                 $char = Testimonial::where(['id'=>$testimony_id])->first();
+                 if($char){
+                     $image = $char->avatar;
+                     //Finally Deletes Image From Folder/Server.
+                     unlink($image);
+                 }
+ 
+                // filename with extension
+                $fileNameWithExt = $request->file('avatar')->getClientOriginalName();
+                // filename
+                $filename = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
+                // extension
+                $extension = $request->file('avatar')->getClientOriginalExtension();
+                // filename to store
+                $fileNameToStore = $filename.'_'.time().'.'.$extension;
 
+                $path = $request->file('avatar')->move('avatars/testimonies/', $fileNameToStore);
+
+                $path_name = $path->getPathname();
+            }
+            // Incase no image was not selected when trying to update profile information, maintain the previous image.
+            if(empty($path_name)){
+                $the_path = Testimonial::where(['id'=>$testimony_id])->first();
+                $get_path = $the_path->avatar;
+                $path_name = $get_path;
+            }
+            Testimonial::where(['id'=>$testimony_id])->update([
+                'name' => $request->name,
+                'profession' => $request->profession,
+                'testimony' => $request->testimony,
+                'avatar' => $path_name
+            ]);
+            session()->flash('success', 'testimony Updated successfully');
+            return redirect()->back();
+         }else{
+            $validator->errors()->add('avatar', "Avatar Should be of either type , ['jpg','png','bmp', 'jpeg', 'gif', 'svg']");
+            return redirect()->back()
+                    ->withErrors($validator)
+                    ->withInput();
+         }
     }
 
 
@@ -341,9 +474,11 @@ class CmsPagesController extends Controller
     public function deleteMember(Request $request){
 
         $member_id = $request->member_id;
-        $member = Member::where(['id'=>$member_id])->delete();
+        $member = Member::where(['id'=>$member_id])->first();
         if($member){
-            
+            $image = $member->avatar;
+            unlink($image);
+            $member->delete();
             session()->flash('success', "member Deleted Successfully");
             return redirect()->back();
         }else{
@@ -353,38 +488,79 @@ class CmsPagesController extends Controller
 
     }
 
+    public function addMemberForm()
+    {
+        return view('auth.admin.cms.add_member');
+    }
 
     public function addMember(Request $request)
     {
-        $this->validate($request, [
+        $validator = Validator::make($request->all(), [
             'name' => 'required|min:3|unique:members',
+            'email' => 'required|email|unique:members',
+            'phone' => 'required|numeric|unique:members',
             'position' => 'required|min:3|',
+            'description' => 'required|min:50',
+            'avatar'  => 'required|max:5068'
         ]);
 
-        $member = new Member();
-        $member->name = $request->name;
-        $member->position = $request->position;
-        $member->description = $request->description;
-        $member->url = strtolower(str_replace(' ', '-', $request->name));
-        $member->youtube = $request->youtube;
-        $member->facebook = $request->facebook;
-        $member->twitter = $request->twitter;
-        if($request->hasFile('avatar')){
-             // filename with extension
-             $fileNameWithExt = $request->file('avatar')->getClientOriginalName();
-             // filename
-             $filename = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
-             // extension
-             $extension = $request->file('avatar')->getClientOriginalExtension();
-             // filename to store
-             $fileNameToStore = $filename.'_'.time().'.'.$extension;
-
-             $path = $request->file('avatar')->move('avatars/members/', $fileNameToStore);
-
-             $path_name = $path->getPathname();
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
         }
-        $member->avatar = $path_name;
-        $member->save();
+         //GEt all the clients uploaded files and validate them to make sure they are of correct type.
+        $extension =$request->file('avatar')->getClientOriginalExtension();
+        $allowedFileExtension=['jpg','png', 'jpeg', 'gif', 'svg'];
+        $check = in_array($extension, $allowedFileExtension);
+        if($check){
+
+            try{
+                DB::beginTransaction();
+
+                $member = new Member();
+                $member->name = $request->name;
+                $member->email = $request->email;
+                $member->phone = $request->phone;
+                $member->position = $request->position;
+                $member->description = $request->description;
+                $member->url = Str::slug($request->name).'-'.time();
+                $member->youtube = $request->youtube;
+                $member->facebook = $request->facebook;
+                $member->twitter = $request->twitter;
+                if($request->hasFile('avatar')){
+                    // filename with extension
+                    $fileNameWithExt = $request->file('avatar')->getClientOriginalName();
+                    // filename
+                    $filename = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
+                    // extension
+                    $extension = $request->file('avatar')->getClientOriginalExtension();
+                    // filename to store
+                    $fileNameToStore = $filename.'_'.time().'.'.$extension;
+
+                    $path = $request->file('avatar')->move('avatars/members/', $fileNameToStore);
+
+                    $path_name = $path->getPathname();
+                }
+                $member->avatar = $path_name;
+                $member->save();
+                DB::commit();
+                session()->flash('success', 'member Added successfully');
+                return redirect()->route('cms.members');
+            }catch(\Illuminate\Database\QueryException $e){
+                DB::rollBack();
+                session()->flash('error', 'Unable to process Database query, Check and make sure your fields are all correct');
+                return redirect()->back()->withInput();
+            }
+            
+        }else{
+            $validator->errors()->add('avatar', "Avatar Should be of either type , ['jpg','png','bmp', 'jpeg', 'gif', 'svg']");
+            return redirect()->back()
+                    ->withErrors($validator)
+                    ->withInput();
+        }
+
+        
         if($member){
             session()->flash('success', 'member Added successfully');
             return redirect()->back();
@@ -394,53 +570,90 @@ class CmsPagesController extends Controller
         }
     }
 
+    public function memberDetail($member_id)
+    {
+        $member = Member::where('id',$member_id)->first();
+        if($member){
+            return view('auth.admin.cms.member_detail')->with(compact('member'));
+        }else{                       
+            abort(404);
+        }
+    }
+
     public function updateMember(Request $request, $member_id)
     {
         
-        $this->validate($request, [
+        $validator = Validator::make($request->all(), [
             'name' => 'required|min:3',
+            'email' => 'required|email',
+            'phone' => 'required|numeric',
             'position' => 'required|min:3',
+            'description' => 'required|min:50',
+            'avatar'  => 'max:5068'
         ]);
 
-         //Handle file upload for the avatar
-         if($request->hasFile('avatar')){
-            // filename with extension
-            $fileNameWithExt = $request->file('avatar')->getClientOriginalName();
-            // filename
-            $filename = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
-            // extension
-            $extension = $request->file('avatar')->getClientOriginalExtension();
-            // filename to store
-            $fileNameToStore = $filename.'_'.time().'.'.$extension;
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+          //Validate Image extension.
+         //Give a default image extension of png
+         $extension = $request->avatar == null ? 'png': $request->avatar->getClientOriginalExtension();
+ 
+         $allowedFileExtension=['jpg','png', 'jpeg', 'gif', 'svg'];
+         $check = in_array($extension, $allowedFileExtension);
 
-            $path = $request->file('avatar')->move('avatars/members/', $fileNameToStore);
+         if($check){
+             //Handle file upload for the avatar
+            if($request->hasFile('avatar')){
+                // filename with extension
+                //delete old image from server
+                $char = Member::where(['id'=>$member_id])->first();
+                if($char){
+                    $image = $char->avatar;
+                    //Finally Deletes Image From Folder/Server.
+                    unlink($image);
+                }
 
-            $path_name = $path->getPathname();
-       }
-       // Incase no image was not selected when trying to update profile information, maintain the previous image.
-       if(empty($path_name)){
-           $the_path = Member::where(['id'=>$member_id])->first();
-           $get_path = $the_path->avatar;
-           $path_name = $get_path;
-       }
-       $member = Member::where(['id'=>$member_id])->update([
-           'name' => $request->name,
-           'position' => $request->position,
-           'description' => $request->description,
-           'url'  => strtolower(str_replace(' ', '-', $request->name)),
-           'youtube' => $request->youtube,
-           'facebook' => $request->facebook,
-           'twitter' => $request->twitter,
-           'avatar' => $path_name
-       ]);
-       if($member){
-           session()->flash('success', 'member Updated successfully');
+                $fileNameWithExt = $request->file('avatar')->getClientOriginalName();
+                // filename
+                $filename = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
+                // extension
+                $extension = $request->file('avatar')->getClientOriginalExtension();
+                // filename to store
+                $fileNameToStore = $filename.'_'.time().'.'.$extension;
+
+                $path = $request->file('avatar')->move('avatars/members/', $fileNameToStore);
+
+                $path_name = $path->getPathname();
+            }
+            // Incase no image was not selected when trying to update profile information, maintain the previous image.
+            if(empty($path_name)){
+                $the_path = Member::where(['id'=>$member_id])->first();
+                $get_path = $the_path->avatar;
+                $path_name = $get_path;
+            }
+            Member::where(['id'=>$member_id])->update([
+                'name' => $request->name,
+                'email' => $request->email,
+                'phone' => $request->phone,
+                'position' => $request->position,
+                'description' => $request->description,
+                'url'  => strtolower(str_replace(' ', '-', $request->name)),
+                'youtube' => $request->youtube,
+                'facebook' => $request->facebook,
+                'twitter' => $request->twitter,
+                'avatar' => $path_name
+            ]);
+            session()->flash('success', 'member Updated successfully');
            return redirect()->back();
-       }else{
-           session()->flash('error', 'Unable to update member, Possible internet error');
-           return redirect()->back();
-       }
-
+         }else{
+            $validator->errors()->add('avatar', "Avatar Should be of either type , ['jpg','png','bmp', 'jpeg', 'gif', 'svg']");
+            return redirect()->back()
+                    ->withErrors($validator)
+                    ->withInput();
+         }
     }
 
 

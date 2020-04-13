@@ -179,6 +179,9 @@ return [
         //!Intervention image to resize images to a certain size
         'Intervention\Image\ImageServiceProvider',
 
+        //!Google map
+        Cornford\Googlmapper\MapperServiceProvider::class,
+
     ],
 
     /*
@@ -232,6 +235,9 @@ return [
 
          //!Intervention image to resize images to a certain size
         'Image' => 'Intervention\Image\Facades\Image',
+
+        //!Google map
+        'Mapper'         => Cornford\Googlmapper\Facades\MapperFacade::class,
 
 
     ],

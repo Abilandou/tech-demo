@@ -41,11 +41,7 @@
                                                   <td><img src="{{asset($blog->avatar)}}" alt="avatar"
                                                       style="max-width: 2.5rem;" class="img-fluid rounded-circle shadow"></td>
                                                   <td>
-                  
-                                                      <button data-toggle="modal" data-target="#blog-modal{{$blog->id}}" 
-                                                          class="btn btn-sm btn-success">
-                                                          <i class="ti-eye">View</i>
-                                                      </button>
+                                                      <a href="{{route('blog.detail', ['blog_id'=>$blog->id])}}" class="btn btn-sm btn-success"><i class="ti-eye">View</i></a>
                                                       <button data-toggle="modal" data-target="#blog-edit-modal{{$blog->id}}" 
                                                               class="btn btn-sm btn-primary">
                                                               <i class="ti-pencil">Edit</i>
@@ -105,26 +101,32 @@
                                                                         <div class="form-group row">
                                                                             <label for="form-1-1" class="col-md-2 control-label">blog title</label>
                                                                             <div class="col-md-10">
-                                                                                <input type="text" value="{{$blog->title}}" name="title" required 
-                                                                                class="form-control" id="form-1-1" placeholder=" blog title">
+                                                                                <input type="text" value="{{old('title', $blog->title)}}" name="title" 
+                                                                                class="form-control @error('title') is-invalid @enderror" id="form-1-1" placeholder=" blog title">
+                                                                                @error('title')
+                                                                                    <span class="invalid-feedback">{{$message}}</span>
+                                                                                @enderror
                                                                             </div>
                                                                         </div>
                                                                         <div class="form-group row">
                                                                             <label for="form-1-5" class="col-md-2 control-label">Description</label>
                                                                             <div class="col-md-10">
-                                                                                <textarea class="form-control" name="description"
-                                                                                    rows="10" id="form-1-5">{{$blog->description}}</textarea>
+                                                                                <textarea class="form-control @error('title') is-invalid @enderror" name="description"
+                                                                                    rows="10" id="form-1-5">{{old('description', $blog->description)}}</textarea>
+                                                                                    @error('description')
+                                                                                        <span class="invalid-feedback">{{$message}}</span>
+                                                                                    @enderror
                                                                             </div>
                                                                         </div>
                                                                         <div class="form-group">
                                                                             <div class="input-group light-input-group">
-                                                                                <select type="text" required value="{{ $blog->category }}"
-                                                                                        placeholder="category id" name="category_id" class="form-control">
+                                                                                <select type="text" value="{{ $blog->category }}"
+                                                                                        placeholder="category id" name="category" class="form-control">
                                                                                     <option value="{{ $blog->category }}" disabled>Select Blog Category
                                                                                     </option>
                                                                                     @foreach($categories as $category)
-                                                                                        <option value="{{ $category->id }}"
-                                                                                                @if($category->name == $blog->category) selected @endif>{{ $category->name }}</option>
+                                                                                        <option value="{{ $category->id }}" 
+                                                                                                @if($category->name == $blog->category) selected @endif {{(old('category')==$category->id) ? 'selected': '' }}>{{ $category->name }}</option>
                                                                                     @endforeach
                                                                                 </select>
                                                                             </div>
@@ -182,25 +184,31 @@
                             <div class="form-group row">
                                 <label for="form-1-1" class="col-md-2 control-label">blog Title</label>
                                 <div class="col-md-10">
-                                    <input type="text" name="title" required 
-                                    class="form-control" id="form-1-1" placeholder=" blog title">
+                                    <input type="text" name="title" value="{{old('title')}}"
+                                    class="form-control @error('title') is-invalid @enderror" id="form-1-1" placeholder=" blog title">
+                                    @error('title')
+                                        <span class="invalid-feedback">{{$message}}</span>
+                                    @enderror
                                 </div>
                             </div>
                             <div class="form-group row">
                                 <label for="form-1-5" class="col-md-2 control-label">Description</label>
                                 <div class="col-md-10">
-                                    <textarea class="form-control" name="description"
-                                        rows="10" id="form-1-5"></textarea>
+                                    <textarea class="form-control @error('description') is-invalid @enderror" name="description"
+                                        rows="10" id="form-1-5">{{old('description')}}</textarea>
+                                        @error('description')
+                                            <span class="invalid-feedback">{{$message}}</span>
+                                        @enderror
                                 </div>
                             </div>
                             <div class="form-group">
-                                <select name="category_id" required class="form-control selection my-3 py-2 pl-3" >
+                                <select name="category" class="form-control @error('category') is-invalid @enderror" >
                                     <option value="" disabled selected>Select Blog Category</option>
                                     @foreach($categories as $category)
-                                        <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                        <option value="{{ $category->id }}" {{(old('category')==$category->id) ? 'selected': '' }}>{{ $category->name }}</option>
                                     @endforeach
                                 </select>
-                                    @error('category_id')
+                                    @error('category')
                                         <span class="invalid-feedback text-center" role="alert">
                                             <strong>{{ $message }}</strong>
                                         </span>
@@ -209,8 +217,13 @@
                             <div class="form-group row">
                                 <label for="form-1-1" class="col-md-2 control-label">Avatar</label>
                                 <div class="col-md-10">
-                                    <input type="file" name="avatar" required 
-                                    class="form-control" id="form-1-1" placeholder=" Avatar">
+                                    <input type="file" name="avatar" 
+                                    class="form-control @error('avatar') is-invalid @enderror" id="form-1-1" placeholder=" Avatar">
+                                    @error('avatar')
+                                        <span class="invalid-feedback text-center" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                    @enderror
                                 </div>
                             </div>
                         
@@ -225,5 +238,13 @@
         </div>
     </div>
 </div>
+
+<script>
+    $(function(){
+        @if(count($errors) > 0)
+            $('#addblogModal').modal('show');
+        @endif
+    });
+</script>
 
 @endsection

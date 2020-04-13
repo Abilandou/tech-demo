@@ -40,19 +40,7 @@
                                             <td><img src="{{asset($shop_item->avatar)}}" alt="avatar"
                                                 style="max-width: 2.5rem;" class="img-fluid rounded-circle shadow"></td>
                                             <td>
-
-                                                <button data-toggle="modal" data-target="#shop_item-modal{{$shop_item->id}}" 
-                                                    class="btn btn-sm btn-success">
-                                                    <i class="ti-eye">View</i>
-                                                </button>
-                                                <button data-toggle="modal" data-target="#shop_item-add-attribute-modal{{$shop_item->id}}" 
-                                                    class="btn btn-sm btn-secondary">
-                                                    <i class="ti-plus">Add Attribute</i>
-                                                </button>
-                                                <button data-toggle="modal" data-target="#shop_item-edit-modal{{$shop_item->id}}" 
-                                                    class="btn btn-sm btn-primary">
-                                                    <i class="ti-pencil">Edit</i>
-                                                </button>
+                                                <a href="{{route('item.detail', ['item_id'=>$shop_item ->id])}}" class="btn btn-success btn-sm"><i class="ti-eye"></i>View</a>
                                                 <form action="{{ route('shop.delete.item') }}" method="post" class="delete-form" style="display:inline;">
                                                     @csrf
                                                     <input type="hidden" name="shop_item_id" value="{{$shop_item->id}}" />
@@ -62,144 +50,6 @@
 
                                             </td>
                                         </tr>
-
-                                        {{-- Get shop_item Details --}}
-
-                                        <div class="modal fade" id="shop_item-modal{{$shop_item->id}}">
-                                            <div class="modal-dialog modal-lg" role="document">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h4 class="text-center">Detail Information for: <b class="text-success">{{ $shop_item->name }}</b></h4>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        <div class="row">
-                                                            <div class="col-md-12">
-                                                                <div class="my-4">
-                                                                    <b class="mr-3">Avatar:</b> <img src="{{asset($shop_item->avatar)}}" alt="avatar"
-                                                                        class="img-fluid rounded-circle shadow">
-                                                                </div>
-                                                                <div class="my-2">
-                                                                    <b>shop_item Name:</b> {{ $shop_item->name }}
-                                                                </div>
-                                                                <div class="my-2">
-                                                                    <b>shop_item Description:</b> {{ $shop_item->description }}
-                                                                </div>
-                                                                <div class="my-2">
-                                                                    <b>Item Category:</b> {{ $shop_item->itemCategory['name'] }}
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        {{-- Edit shop_item Modal --}}
-                                        <div class="modal fade" id="shop_item-edit-modal{{$shop_item->id}}">
-                                            <div class="modal-dialog modal-lg" role="document">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h4 class="text-center">UPDATE: {{$shop_item->name}}</h4>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        <div class="row">
-                                                            <div class="col-md-12">
-                                                                <form action="{{ route('shop.update.item',['shop_item_id'=>$shop_item->id]) }}" method="POST" class="form-horizontal mrg-top-40 pdd-right-30" enctype="multipart/form-data">
-                                                                    @csrf
-                                                                    <div class="form-group row">
-                                                                        <label for="form-1-1" class="col-md-2 control-label">shop_item Name</label>
-                                                                        <div class="col-md-10">
-                                                                            <input type="text" value="{{$shop_item->name}}" name="name" required 
-                                                                            class="form-control" id="form-1-1" placeholder=" shop_item Name">
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="form-group">
-                                                                        <div class="input-group light-input-group">
-                                                                            <select type="text" required 
-                                                                                    placeholder="item category" name="item_category_id" class="form-control">
-                                                                                <option value="{{ $shop_item->itemCategory['name'] }}" disabled>Select Category
-                                                                                </option>
-                                                                                @foreach($itemCategories as $itemCategory)
-                                                                                    <option value="{{ $itemCategory->id }}"
-                                                                                            @if($itemCategory->name == $shop_item->itemCategory['name']) selected @endif>{{ $itemCategory->name }}</option>
-                                                                                @endforeach
-                                                                            </select>
-                                                                            
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="form-group row">
-                                                                        <label for="form-1-5" class="col-md-2 control-label">Description</label>
-                                                                        <div class="col-md-10">
-                                                                            <textarea class="form-control" name="description"
-                                                                                rows="10" id="form-1-5">{{$shop_item->description}}</textarea>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="form-group row">
-                                                                        <label for="form-1-1" class="col-md-2 control-label">Avatar</label>
-                                                                        <div class="col-md-10">
-                                                                            <img src="{{asset($shop_item->avatar)}}" alt="avatar"
-                                                                                style="max-width: 2.5rem;" class="img-fluid rounded-circle shadow">
-                                                                            <input type="file" name="avatar"
-                                                                            class="form-control" id="form-1-1" placeholder=" Avatar">
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="modal-footer float-right">
-                                                                    <button type="button" data-dismiss="modal" class="btn btn-secondary">Close</button>
-                                                                    <button type="submit" class="btn btn-primary">Update</button>
-                                                                </div>
-                                                            </form>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        {{-- Add shop_item attribute Modal --}}
-                                        <div class="modal fade" id="shop_item-add-attribute-modal{{$shop_item->id}}">
-                                            <div class="modal-dialog modal-lg" role="document">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h4 class="text-center">Adding Attributes For: {{$shop_item->name}}</h4>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        <div class="row">
-                                                            <div class="col-md-12">
-                                                                <form action="{{ route('shop.item.add.attribute',['item_id'=>$shop_item->id]) }}" method="POST" class="form-horizontal mrg-top-40 pdd-right-30" enctype="multipart/form-data">
-                                                                    @csrf
-                                                                    <input type="hidden" value="{{$shop_item->id}}" name="item_id" required>
-                                                                    <div id="inputFile" class="form-group">
-                                                                        <div class="mb-5 position-relative input-section">
-                                                                            <div>
-                                                                                <label for="form-1-1">Other Images(Add More input by clicking the add button below the input)</label>
-                                                                                    <input type="file" class="form-control @error('the_image') is-invalid @enderror" name="the_image[]"  required autocomplete="the_image" autofocus>
-                                                                                @error('the_image')
-                                                                                    <span class="invalid-feedback text-center" role="alert">
-                                                                                        <strong>{{ $message }}</strong>
-                                                                                    </span>
-                                                                                @enderror
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div>
-                                                                        <button type="button" class="btn btn-primary btn-mini btn-rounded " id="addFile" style="margin-top:-30px; float:right">
-                                                                            <i class="ti-plus"></i>
-                                                                        </button>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="modal-footer float-right">
-                                                                    <button type="button" data-dismiss="modal" class="btn btn-secondary">Close</button>
-                                                                    <button type="submit" class="btn btn-primary">Add</button>
-                                                                </div>
-                                                            </form>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
                                     @endforeach
                                 </tbody>
                             </table>
@@ -222,38 +72,51 @@
                                     <form action="{{ route('shop.add.item') }}" method="POST" class="form-horizontal mrg-top-40 pdd-right-30" enctype="multipart/form-data">
                                         @csrf
                                         <div class="form-group row">
-                                            <label for="form-1-1" class="col-md-2 control-label">shop_item Name</label>
+                                            <label for="form-1-1" class="col-md-2 control-label">Item Name</label>
                                             <div class="col-md-10">
-                                                <input type="text" name="name" required 
-                                                class="form-control" id="form-1-1" placeholder=" shop_item Name">
+                                                <input type="text" name="name"  value="{{old('name')}}"
+                                                class="form-control @error('name') is-invalid @enderror" id="form-1-1" placeholder=" shop_item Name">
+                                                @error('name')
+                                                    <span class="invalid-feedback">{{$message}}</span>
+                                                @enderror
                                             </div>
                                         </div>
                                         
                                         <div class="form-group">
-                                            <select name="item_category_id" required class="form-control selection my-3 py-2 pl-3" >
+                                            <select name="item_category"  class="form-control @error('name') is-invalid @enderror" >
                                                 <option value="" disabled selected>Select Category</option>
                                                 @foreach($itemCategories as $itemCategory)
-                                                    <option value="{{ $itemCategory->id }}">{{ $itemCategory->name }}</option>
+                                                    <option value="{{ $itemCategory->id }}" {{(old('item_category')==$itemCategory->id) ? 'selected': '' }}>{{ $itemCategory->name }}</option>
                                                 @endforeach
                                             </select>
-                                                @error('item_category_id')
-                                                    <span class="invalid-feedback text-center" role="alert">
-                                                        <strong>{{ $message }}</strong>
-                                                    </span>
-                                                @enderror
+                                            @error('item_category')
+                                                <span class="invalid-feedback text-center" role="alert">
+                                                    <strong>{{ $message }}</strong>
+                                                </span>
+                                            @enderror
                                         </div>
                                         <div class="form-group row">
                                             <label for="form-1-5" class="col-md-2 control-label">Description</label>
                                             <div class="col-md-10">
-                                                <textarea class="form-control" name="description"
-                                                    rows="10" id="form-1-5"></textarea>
+                                                <textarea class="form-control @error('name') is-invalid @enderror" name="description"
+                                                    rows="10" id="form-1-5">{{old('description')}}</textarea>
+                                                @error('description')
+                                                    <span class="invalid-feedback text-center" role="alert">
+                                                        <strong>{{ $message }}</strong>
+                                                    </span>
+                                                @enderror
                                             </div>
                                         </div>
                                         <div class="form-group row">
                                             <label for="form-1-1" class="col-md-2 control-label">Avatar</label>
                                             <div class="col-md-10">
-                                                <input type="file" name="avatar" required 
-                                                class="form-control" id="form-1-1" placeholder=" Avatar">
+                                                <input type="file" name="avatar"  
+                                                class="form-control @error('avatar') is-invalid @enderror" id="form-1-1" placeholder=" Avatar">
+                                                @error('avatar')
+                                                    <span class="invalid-feedback text-center" role="alert">
+                                                        <strong>{{ $message }}</strong>
+                                                    </span>
+                                                @enderror
                                             </div>
                                         </div>
                                 </div>
@@ -273,5 +136,12 @@
     </div>
 </div>
 
+<script>
+    $(function(){
+        @if(count($errors) > 0)
+            $('#addshop_itemModal').modal('show');
+        @endif
+    });
+</script>
 
 @endsection

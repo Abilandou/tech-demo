@@ -125,10 +125,10 @@
                                         <h3>SERVICES</h3>
                                     </div>
                                     <ul class="footer-list">
-                                        <li><a href="#">Heating Repair</a></li>
-                                        <li><a href="#">Plumbing Services</a></li>
-                                        <li><a href="#">Conditioning Repair</a></li>
-                                        <li><a href="#">Electrical Services</a></li>
+                                        @foreach(\App\Service::all() as $service)
+                                            <li><a href="{{route('single.service',['url'=>$service->url])}}">{{$service->name}}</a></li>
+                                        @endforeach
+                                        
                                     </ul>
                                 </div><!--// Footer-info End -->
                             </div>

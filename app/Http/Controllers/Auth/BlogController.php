@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Category;
 use App\Blog;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class BlogController extends Controller
 {
@@ -84,6 +86,16 @@ class BlogController extends Controller
         return view('auth.admin.cms.blogs')->with(compact('blogs', 'categories'));
     }
 
+    public function blogDetail($blog_id)
+    {
+        $blog = Blog::where(['id'=>$blog_id])->first();
+        if($blog){
+            return view('auth.admin.cms.blog_detail')->with(compact('blog'));
+        }else{
+            abort(404);
+        }
+    }
+
     public function deleteBlog(Request $request)
     {
 
@@ -103,83 +115,119 @@ class BlogController extends Controller
 
     public function addBlog(Request $request)
     {
-        $this->validate($request, [
+        $validator = Validator::make($request->all(), [
             'title' => 'required|min:3|unique:blogs',
-            'avatar' => 'required',
-            'category_id' => 'required'
+            'category' => 'required',
+            'description' => 'required',
+            'avatar'  => 'required|max:5068'
         ]);
 
-        $blog = new Blog();
-        $blog->title = $request->title;
-        $blog->description = $request->description;
-        $blog->category_id = $request->category_id;
-        $blog->url = strtolower(str_replace(' ', '-', $request->title));
-        if($request->hasFile('avatar')){
-             // filename with extension
-             $fileNameWithExt = $request->file('avatar')->getClientOriginalName();
-             // filename
-             $filename = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
-             // extension
-             $extension = $request->file('avatar')->getClientOriginalExtension();
-             // filename to store
-             $fileNameToStore = $filename.'_'.time().'.'.$extension;
-
-             $path = $request->file('avatar')->move('avatars/blogs/', $fileNameToStore);
-
-             $path_name = $path->getPathname();
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
         }
-        $blog->avatar = $path_name;
-        $blog->save();
-        if($blog){
+         //Get all the clients uploaded files and validate them to make sure they are of correct type.
+        $extension =$request->file('avatar')->getClientOriginalExtension();
+        $allowedFileExtension=['jpg','png', 'jpeg', 'gif', 'svg'];
+        $check = in_array($extension, $allowedFileExtension);
+
+        if($check){
+            $blog = new Blog();
+            $blog->title = $request->title;
+            $blog->description = $request->description;
+            $blog->category_id = $request->category;
+            $blog->url = Str::slug($request->title).'-'.time();
+            if($request->hasFile('avatar')){
+                 // filename with extension
+                 $fileNameWithExt = $request->file('avatar')->getClientOriginalName();
+                 // filename
+                 $filename = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
+                 // extension
+                 $extension = $request->file('avatar')->getClientOriginalExtension();
+                 // filename to store
+                 $fileNameToStore = $filename.'_'.time().'.'.$extension;
+    
+                 $path = $request->file('avatar')->move('avatars/blogs/', $fileNameToStore);
+    
+                 $path_name = $path->getPathname();
+            }
+            $blog->avatar = $path_name;
+            $blog->save();
             session()->flash('success', 'Blog Added successfully');
             return redirect()->back();
         }else{
-            session()->flash('error', 'Unable to add blog, possible internet error');
-            return redirect()->back();
+            $validator->errors()->add('avatar', "Avatar Should be of either type , ['jpg','png','bmp', 'jpeg', 'gif', 'svg']");
+            return redirect()->back()
+                    ->withErrors($validator)
+                    ->withInput();
         }
     }
 
     public function updateBlog(Request $request, $blog_id)
     {
-        $this->validate($request, [
+        $validator = Validator::make($request->all(), [
             'title' => 'required|min:3',
+            'category' => 'required',
+            'description' => 'required',
+            'avatar'  => 'max:5068'
         ]);
 
-         //Handle file upload for the avatar
-         if($request->hasFile('avatar')){
-            // filename with extension
-            $fileNameWithExt = $request->file('avatar')->getClientOriginalName();
-            // filename
-            $filename = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
-            // extension
-            $extension = $request->file('avatar')->getClientOriginalExtension();
-            // filename to store
-            $fileNameToStore = $filename.'_'.time().'.'.$extension;
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
 
-            $path = $request->file('avatar')->move('avatars/blogs/', $fileNameToStore);
+         //Give a default image extension of png
+         $extension = $request->avatar == null ? 'png': $request->avatar->getClientOriginalExtension();
+ 
+         $allowedFileExtension=['jpg','png', 'jpeg', 'gif', 'svg'];
+         $check = in_array($extension, $allowedFileExtension);
 
-            $path_name = $path->getPathname();
-       }
-       // Incase no image was not selected when trying to update profile information, maintain the previous image.
-       if(empty($path_name)){
-           $the_path = Blog::where(['id'=>$blog_id])->first();
-           $get_path = $the_path->avatar;
-           $path_name = $get_path;
-       }
-       $blog = Blog::where(['id'=>$blog_id])->update([
-           'title' => $request->title,
-           'description' => $request->description,
-           'category_id' => $request->category_id,
-           'url'  => strtolower(str_replace(' ', '-', $request->title)),
-           'avatar' => $path_name
-       ]);
-       if($blog){
-           session()->flash('success', 'Blog Updated successfully');
-           return redirect()->back();
-       }else{
-           session()->flash('error', 'Unable to update blog, Possible internet error');
-           return redirect()->back();
-       }
+         if($check){
+             //Handle file upload for the avatar
+            if($request->hasFile('avatar')){
+
+                $char = Blog::where(['id'=>$blog_id])->first();
+                if($char){
+                    $avatar = $char->avatar;
+                    unlink($avatar);
+                }
+                // filename with extension
+                $fileNameWithExt = $request->file('avatar')->getClientOriginalName();
+                // filename
+                $filename = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
+                // extension
+                $extension = $request->file('avatar')->getClientOriginalExtension();
+                // filename to store
+                $fileNameToStore = $filename.'_'.time().'.'.$extension;
+
+                $path = $request->file('avatar')->move('avatars/blogs/', $fileNameToStore);
+
+                $path_name = $path->getPathname();
+            }
+            // Incase no image was not selected when trying to update profile information, maintain the previous image.
+            if(empty($path_name)){
+                $the_path = Blog::where(['id'=>$blog_id])->first();
+                $get_path = $the_path->avatar;
+                $path_name = $get_path;
+            }
+            Blog::where(['id'=>$blog_id])->update([
+                'title' => $request->title,
+                'description' => $request->description,
+                'category_id' => $request->category,
+                'url'  => Str::slug($request->title).'-'.time(),
+                'avatar' => $path_name
+            ]);
+            session()->flash('success', 'Blog Updated successfully');
+            return redirect()->back();
+         }else{
+            $validator->errors()->add('avatar', "Avatar Should be of either type , ['jpg','png','bmp', 'jpeg', 'gif', 'svg']");
+            return redirect()->back()
+                    ->withErrors($validator)
+                    ->withInput();
+         }
 
     }
 
