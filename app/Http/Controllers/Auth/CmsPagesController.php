@@ -64,7 +64,7 @@ class CmsPagesController extends Controller
             $service = new Service();
             $service->name = $request->name;
             $service->description = $request->description;
-            $service->url = strtolower(str_replace(' ', '-', $request->name));
+            $service->url = Str::slug($request->name).'-'.time();
             if($request->hasFile('avatar')){
                 // filename with extension
                 $fileNameWithExt = $request->file('avatar')->getClientOriginalName();
@@ -152,7 +152,7 @@ class CmsPagesController extends Controller
             Service::where(['id'=>$service_id])->update([
                 'name' => $request->name,
                 'description' => $request->description,
-                'url'  => strtolower(str_replace(' ', '-', $request->name)),
+                'url'  => Str::slug($request->name).'-'.time(),
                 'avatar' => $path_name
             ]);
             session()->flash('success', 'Service Updated successfully');

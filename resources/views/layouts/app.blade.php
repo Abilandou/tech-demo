@@ -68,7 +68,7 @@
                                 <li class="nav-item {{ Route::is('contact.page') ? 'active' : '' }}">
                                     <a href="{{route('contact.page')}}">CONTACT</a>
                                 </li>
-                                <li><a href="{{route('shop.items')}}">SHOP</a>
+                                <li><a href="{{route('home.shop.items')}}">SHOP</a>
                                     <ul class="sub-menu">
                                         @foreach(\App\ItemCategory::all() as $category)
                                         <li><a href="{{route('item.name.by.category',['item_category'=>$category->name])}}">{{$category->name}}</a></li>

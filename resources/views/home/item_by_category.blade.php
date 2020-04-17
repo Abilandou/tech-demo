@@ -23,7 +23,7 @@
                             </div>
                             <div class="latest-blog-cont">
                                 <h3><a href="{{route('item.show.detail',['url'=>$itemByCategory->url])}}">{{$itemByCategory->name}}</a></h3>
-                                <p>{{$itemByCategory->description}} AND URL   {{$itemByCategory->url}}</p>
+                                <p>{{Str::limit($itemByCategory->description, 100)}}</p>
                                 <p>
                                     <a href="{{route('item.show.detail',['url'=>$itemByCategory->url])}}" class="btn btn-primary">Details</a>
                                 </p>

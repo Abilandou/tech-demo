@@ -96,7 +96,7 @@
                     </div>
                     <div class="case-content">
                         <h3><a href="{{route('single.blog',['url'=>$blog->url])}}">{{$blog->title}}</a></h3>
-                        <p>{{$blog->description}}</p>
+                        <p>{{Str::limit($blog->description, 150)}}</p>
                     </div>
                 </div><!--// single-case-item End -->
             </div>

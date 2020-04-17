@@ -66,78 +66,84 @@
         </div>
     </div>
     <hr>
-    <div class="container-fluid card my-5">
-        <div class="page-title">
-            <h4>
-                Other Administrators
-                <button data-toggle="modal" title="Add Administrator" style="float-right" data-target="#add-admin-modal" 
-                    class="btn btn-sm btn-primary mt-2 ml-5">
-                    <i class="ti-plus"></i>Add Admin
-                </button>
-            </h4>
-        </div>
-        <div class="row">
-            <div class="col-md-12">
-                <div class="table-overflow">
-                    <table id="dt-opt" class="table table-lg table-hover table-bordered">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th>avatar</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php $i=1; ?>
-                            @foreach ($admins as $admin)
-                            @if(Auth::user()->id != $admin->id)
+    @if(Auth::user()->is_supper_admin == true)
+        <div class="container-fluid card my-5">
+            <div class="page-title">
+                <h4>
+                    Other Administrators
+                    <button data-toggle="modal" title="Add Administrator" style="float-right" data-target="#add-admin-modal" 
+                        class="btn btn-sm btn-primary mt-2 ml-5">
+                        <i class="ti-plus"></i>Add Admin
+                    </button>
+                </h4>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="table-overflow">
+                        <table id="dt-opt" class="table table-lg table-hover table-bordered">
+                            <thead>
                                 <tr>
-                                    <td>
-                                        <div class="relative mrg-top-15">
-                                            <span class="pdd-left-20">{{$i++}}</span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="relative mrg-top-15">
-                                            <span class="pdd-left-20">{{$admin->name}}</span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="relative mrg-top-15">
-                                            <span class="pdd-left-20">{{$admin->email}}</span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="relative mrg-top-15">
-                                            @if($admin->avatar == null)
-                                                <a href="{{ asset('img/camera-preview.png') }}" class="view-image"><img src="{{asset('img/camera-preview.png')}}" width="20px" height="20px" class="img-fluid"></a>
-                                            @else
-                                                <a href="{{ asset($admin->avatar) }}" class="view-image"><img src="{{asset($admin->avatar)}}" width="20px" height="20px" class="img-fluid"></a>
-                                            @endif
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <form action="{{ route('admin.delete') }}" method="post" class="delete-form" style="display:inline;">
-                                            @csrf
-                                            <input type="hidden" name="admin_id" value="{{$admin->id}}" />
-                                            <button type="submit" title="Delete Admin" 
-                                                class="btn btn-danger btn-sm delete-record"><i class="ti-trash"></i> Delete</button>
-                                        </form>
-                                    </td>
+                                    <th>#</th>
+                                    <th>Name @if(!Auth::user()->is_supper_admin == '1') you @else no @endif</th>
+                                    <th>Email</th>
+                                    <th>avatar</th>
+                                    <th>Actions</th>
                                 </tr>
-                            @endif
-                           
-                            @endforeach
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                <?php $i=1; ?>
+                                @foreach ($admins as $admin)
+                                @if(Auth::user()->id != $admin->id)
+                                    <tr>
+                                        <td>
+                                            <div class="relative mrg-top-15">
+                                                <span class="pdd-left-20">{{$i++}}</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="relative mrg-top-15">
+                                                <span class="pdd-left-20">{{$admin->name}}</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="relative mrg-top-15">
+                                                <span class="pdd-left-20">{{$admin->email}}</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="relative mrg-top-15">
+                                                @if($admin->avatar == null)
+                                                    <a href="{{ asset('img/camera-preview.png') }}" class="view-image"><img src="{{asset('img/camera-preview.png')}}" width="20px" height="20px" class="img-fluid"></a>
+                                                @else
+                                                    <a href="{{ asset($admin->avatar) }}" class="view-image"><img src="{{asset($admin->avatar)}}" width="20px" height="20px" class="img-fluid"></a>
+                                                @endif
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <form action="{{ route('admin.delete') }}" method="post" class="delete-form" style="display:inline;">
+                                                @csrf
+                                                <input type="hidden" name="admin_id" value="{{$admin->id}}" />
+                                                <button type="submit" title="Delete Admin" 
+                                                    class="btn btn-danger btn-sm delete-record"><i class="ti-trash"></i> Delete</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                @endif
+                            
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    @endif
 </div>
 <!-- Content Wrapper END -->
+
+{{-- Other admins section --}}
+
+
 <div class="modal fade" id="add-admin-modal">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -151,7 +157,7 @@
                                 @csrf
                                 <div class="form-group">
                                     <input id="name" name="name" 
-                                        placeholder="prénom" type="text" 
+                                        placeholder="name" type="text" 
                                         class="form-control @error('name') is-invalid @enderror" 
                                         value="{{ old('name') }}" required autocomplete="name" autofocus>
                                     @error('name')
@@ -199,5 +205,7 @@
         </div>
     </div>
 </div>
+
+{{-- End Add Other admins --}}
 
 @endsection

@@ -111,7 +111,7 @@
                         <label class="form-control-label text-uppercase">Message<b class="text-danger">*</b></label>
                    
                           <textarea required name="message" rows="5"
-                              placeholder="what do have to say?"
+                              placeholder="what do you have to say?"
                               class="form-control">{{old('message')}}</textarea>
                         
                       </div>

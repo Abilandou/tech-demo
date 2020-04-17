@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', 'HomeController@home')->name('home.page');
 Route::get('about/', 'HomeController@about')->name('about.page');
 Route::get('contact/', 'HomeController@contact')->name('contact.page');
-Route::get('blog/', 'HomeController@blog')->name('blog.page');
+Route::get('blogs/', 'HomeController@blog')->name('blog.page');
 Route::get('service/', 'HomeController@service')->name('service.page');
 Route::get('home/', 'HomeController@index')->name('home');
  //!Service
@@ -30,8 +30,19 @@ Route::get('home/', 'HomeController@index')->name('home');
  Route::get('/items/{item_category}', 'HomeController@itemsByCategory')->name('item.name.by.category');
  Route::get('/item/{url}', 'HomeController@itemDetail')->name('item.show.detail');
 
+
+ //!Forgot password
+ Route::get('forgot/password', 'HomeController@showForgotPasswordForm')->name('show.forgot.password.form');
+ Route::post('get/link', 'HomeController@getResetLink')->name('get.reset.link');
+ Route::get('reset/password/form/{token}', 'HomeController@showPasswordResetForm')->name('password.reset.form');
+ Route::post('reset/password', 'HomeController@resetPassword')->name('admin.password.update');
+
 //Enquiry Message
 Route::post('send/enquiry', 'Auth\AdminController@enquiryMessage')->name('client.enquiry.message');
+
+ //!Front View
+ Route::get('/shop/items', 'HomeController@allShopItems')->name('home.shop.items');
+        
 
 
 // Auth::routes();
@@ -94,7 +105,7 @@ Route::group(['prefix' => 'admin'], function () {
         Route::post('/add/item-attribute/{item_id}', 'Auth\ShopController@addItemAttribute')->name('shop.item.add.attribute');
         Route::get('items/{item_id}', 'Auth\ShopController@itemDetail')->name('item.detail');
         Route::post('item-image/delete', 'Auth\ShopController@deleteItemImage')->name('item.image.delete');
-        
+
         //!enquiry
         Route::get('/enquiries', 'Auth\ShopController@allEnquiries')->name('shop.enquiries');
         Route::post('/enquiry/delete', 'Auth\ShopController@deleteEnquiry')->name('shop.delete.enquiry');

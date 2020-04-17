@@ -45,6 +45,9 @@
                                                         </span>
                                                     @enderror
                                                   </div>
+                                                  <div class="float-left">
+                                                    <a href="{{route('show.forgot.password.form')}}" >Forgot Password?</a>
+                                                  </div>
                                                   <div class="float-right">
                                                     <button type="submit" class="btn btn-primary shadow px-5">Log in</button>
                                                   </div>
