@@ -10,9 +10,15 @@ use App\Category;
 use App\SubService;
 use App\Testimonial;
 use Illuminate\Support\Facades\Validator;
+use App\Item;
+use App\Enquiry;
+use App\ItemCategory;
+use App\Contact;
+use App\Traits\MessageServiceTrait;
 
 class HomeController extends Controller
 {
+    use MessageServiceTrait;
     /**
      * Create a new controller instance.
      *
@@ -97,16 +103,105 @@ class HomeController extends Controller
         return view('home.category_with_blogs')->with(compact('categoryBlog', 'page_name', 'category_name'));
     }
 
-    public function contactUs(Request $request){
-
-        $this->validate($request, [
+    public function contactUs(Request $request)
+    {
+         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'email' => 'required|email',
             'phone' => 'required|numeric',
             'message' => 'required',
             'subject' => 'required'
         ]);
-       
-        dd($request->all());
+        
+        if($validator->fails())
+        {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $contact = new Contact();
+        $contact->name  = $request->name;
+        $contact->email = $request->email;
+        $contact->phone = $request->phone;
+        $contact->subject = $request->subject;
+        $contact->message = $request->message;
+
+        $contact->save();
+
+        $messageData = [
+            'email'=>$request->email, 
+            'name'=>$request->name, 
+            'subject' => $request->subject,
+            'phone'  => $request->phone,
+            'message' => $contact->message
+        ];
+        $view_path = 'site.mails.contact_us';
+        try{
+            $to_email = 'testdeve123t@gmail.com';
+            $this->sendEmail($messageData, $to_email, $view_path);
+            session()->flash('success', 'Thanks for contacting us we will get back to you shortly');
+            return redirect()->back();
+            //Try to send email
+        }catch(\Exception $ex){
+            session()->flash('info', 'Thanks for contacting us we will get back to you shortly');
+            return redirect()->back();
+        }
     }
+
+
+    
+
+    public function shopItems()
+    {
+        $items = Item::paginate(15);
+        return view('home.shop')->with(compact('items'));
+    }
+    
+    public function showItem($url){
+        $item = Item::where('url', $url)->first();
+        if($item){
+            return view('home.show_item')->with(compact('item'));
+        }else{
+            abort(404);
+        }
+    }
+
+    public function makeEnquiry(Request $request)
+    {
+        $validator = Validator::make($request->all(),[
+            'name' => 'required|min:3',
+            'email' => 'required|email',
+            'phone' => 'required',
+            'enquiry' => 'required|min:10'
+        ]);
+        
+        if($validator->fails()){
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+        $enq = new Enquiry();
+        $enq->name = $request->name;
+        $enq->email = $request->email;
+        $enq->phone = $request->phone;
+        $enq->enquiry = $request->enquiry;
+        $enq->item = $request->item;
+        $enq->save();
+        if($enq){
+            session()->flash('info', 'Enquiry Placed successfully');
+            return redirect()->back();
+        }else{
+            session()->flash('error', 'Unable to Place enquiry');
+            return redirect()->back();
+        }
+    }
+
+    public function itemByCategory(Request $request, $category){
+        $item = ItemCategory::where('name', $category)->first();
+        if ($item) {
+            $cat_id = $item->id;
+            $items = Item::where('item_category_id', $cat_id)->paginate(15);
+            return view('home.item_by_category')->with(compact('items', 'category'));
+        }else{
+            abort(404);
+        }
+    }
+
 }

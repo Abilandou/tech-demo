@@ -10,6 +10,7 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
+use Illuminate\Support\Facades\Route;
 
 
 Route::get('/', 'HomeController@home')->name('home.page');
@@ -24,20 +25,21 @@ Route::get('home/', 'HomeController@index')->name('home');
  Route::get('category/{category_name}/', 'HomeController@blogCategories')->name('category.with.blog');
  Route::post('contact/us/', 'HomeController@contactUs')->name('user.contact');
 
+ //!global shop
+ Route::get('shop/items', 'HomeController@shopItems')->name('home.shop.items');
+ Route::get('shop/item/{url}/', 'HomeController@showItem')->name('item.show');
+ Route::get('shop/category/{category}', 'HomeController@itemByCategory')->name('home.item.by.category');
+
+ //!enquiry
+ Route::post('enquiry', 'HomeController@makeEnquiry')->name('make.enquiry');
+
 // Auth::routes();
 Route::group(['prefix' => 'admin'], function () {
-
-
     Route::get('login/', 'Auth\LoginController@adminLoginForm')->name('admin.login.form');
     Route::post('login-admin/', 'Auth\LoginController@adminLogin')->name('admin.login');
     Route::get('register/', 'Auth\RegisterController@adminRegisterForm')->name('admin.register.form');
     Route::post('admin-register/', 'Auth\RegisterController@adminRegister')->name('admin.register');
-    
 
-   
-    
-   
-    
    Route::group(['middleware' => ['auth']], function(){
         Route::get('/dashboard', 'Auth\AdminController@dashboard')->name('admin.dashboard');
         Route::get('logout/', 'Auth\LoginController@adminLogout')->name('admin.logout');
@@ -92,13 +94,11 @@ Route::group(['prefix' => 'admin'], function () {
             Route::post('item-category/update/{item_category_id}', 'Auth\ShopController@updateItemCategory')->name('item.category.update');
             Route::post('item-category/delete', 'Auth\ShopController@deleteItemCategory')->name('item.category.delete');
 
+            //!Enquiries
+            Route::get('/enquiries', 'Auth\ShopController@enquiries')->name('item.enquiry');
+            Route::post('delete/enq', 'Auth\ShopController@deleteEnquiry')->name('enquiry.delete');
+
 
    });
 
 });
-
-
-
-
-
-

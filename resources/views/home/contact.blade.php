@@ -1,6 +1,6 @@
 @extends('layouts.app')
+@section('title', 'Contact Us')
 @section('content')
-
 
     <!-- contact Area Start -->
     <div class="contact-area section-ptb mt-5">
@@ -68,7 +68,7 @@
                 <div class="col-lg-8  ml-auto mr-auto">
                     <!-- contact-form-warp Start -->
                     <div class="contact-form-warp pt--60 section-pb">
-                        <form id="contact-form" action="{{ route('user.contact') }}" method="post">
+                        <form  action="{{ route('user.contact') }}" method="post">
                             @csrf
                             <div class="row">
                                 <div class="col-lg-6 col-md-6">

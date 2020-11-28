@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\ItemCategory;
 use App\ItemAttribute;
 use Illuminate\Support\Facades\Storage;
+use App\Enquiry;
 
 class ShopController extends Controller
 {
@@ -72,6 +73,8 @@ class ShopController extends Controller
        }
 
     }
+
+
 
 
     public function allShopItems()
@@ -214,25 +217,32 @@ class ShopController extends Controller
             }
         
         }
-        if($attribute){
-            session()->flash('success', 'Item attributes added successfully');
+        // if($attribute){
+        //     session()->flash('success', 'Item attributes added successfully');
+        //     return redirect()->back();
+        // }else{
+        //     session()->flash('error', 'Unable to add item attributes');
+        //     return redirect()->back();
+        // }
+    }
+
+    public function enquiries()
+    {
+        $enquiries = Enquiry::all();
+        return view('auth.admin.shop.enquiries')->with(compact('enquiries'));
+    }
+
+    public function deleteEnquiry(Request $request){
+
+        // $shop_item_id = $request->shop_item_id;
+        $enq = Enquiry::where(['id'=>$request->enq_id])->delete();
+        if($enq){
+            session()->flash('success', "Enquiry Deleted Successfully");
             return redirect()->back();
         }else{
-            session()->flash('error', 'Unable to add item attributes');
+            session()->flash('error', 'Unable to delete Enquiry. possible internet error');
             return redirect()->back();
         }
-
-
-
-
-
-
-
-
-
-
-        
-       
 
     }
 

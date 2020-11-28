@@ -127,6 +127,9 @@
                             <li>
                                 <a href="{{route('shop.items')}}">Items</a>
                             </li>
+                            <li>
+                                <a href="{{route('item.enquiry')}}">Enquiries</a>
+                            </li>
                         </ul>
                     </li>
                 </ul>

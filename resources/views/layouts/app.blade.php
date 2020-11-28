@@ -6,7 +6,7 @@
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     
-    <title>Tech-Republic | {{ $page_name }} </title>
+    <title>Tech-Republic | @yield('title')</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- Favicon -->
@@ -33,60 +33,16 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <link href="{{ asset('toastr/toastr.min.css') }}" rel="stylesheet">
     <script src="{{ asset('toastr/toastr.min.js') }}"></script>
+
+    @yield('header-style')
 </head>
 
 <body>
 
      <!-- Header-area start -->
  <header class="header header-sticky mb-3">
-    <div class="header-area inner-header">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-4">
-                    <!-- logo Start -->
-                    <div class="logo">
-                        <a href="{{route('home.page')}}"><img src="{{asset('assets/images/logo/logo.png')}}" alt=""></a>
-                    </div><!--// logo End -->
-                </div>
-                <div class="col-lg-8">
-                    <!-- main-menu-area Start -->
-                    <div class="main-menu">
-                        <nav class="main-navigation">
-                            <ul>
-                                <li class="nav-item {{ Route::is('home.page') ? 'active' : '' }}">
-                                    <a href="{{route('home.page')}}">HOME</a>
-                                </li>
-                                <li class="nav-item {{ Route::is('about.page') ? 'active' : '' }}">
-                                    <a href="{{route('about.page')}}">ABOUT</a>
-                                </li>
-                                <li class="nav-item {{ Route::is('service.page') ? 'active' : '' }}">
-                                    <a href="{{route('service.page')}}">SERVICE</a>
-                                </li>
-                                <li class="nav-item {{ Route::is('blog.page') ? 'active' : '' }}">
-                                    <a href="{{route('blog.page')}}">BLOG</a>
-                                </li>
-                                <li class="nav-item {{ Route::is('contact.page') ? 'active' : '' }}">
-                                    <a href="{{route('contact.page')}}">CONTACT</a>
-                                </li>
-                                <li><a href="{{route('shop.items')}}">SHOP</a>
-                                    <ul class="sub-menu">
-                                        @foreach(\App\ItemCategory::all() as $category)
-                                        <li><a href="service-2.html">{{$category->name}}</a></li>
-                                        @endforeach
-                                    </ul>
-                                </li>
-                            </ul>
-                        </nav>
-                    </div><!--// main-menu-area End -->
-                </div>
-                <div class="col">
-                    <!-- mobile-menu start -->
-                    <div class="mobile-menu d-block d-lg-none"></div>
-                    <!-- mobile-menu end -->
-                </div>
-            </div>
-        </div>
-    </div>
+     @include('layouts.header')
+    
 </header>
 <!-- Header-area end -->
     <!-- Main Wrapper Start -->
@@ -181,5 +137,8 @@
 <!-- Main JS -->
 <script src="{{asset('assets/js/main.js')}}"></script>
 
+@include('includes.message')
+
+@yield('footer-script')
 
 </html>

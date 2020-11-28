@@ -1,8 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-    
-
 
 <!-- Hero Slider start -->
 <div class="hero-slider hero-slider-1">
