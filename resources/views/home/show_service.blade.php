@@ -6,7 +6,7 @@
 <div class="blog-details-area section-ptb">
     <div class="container">
         <div class="row">
-            <div class="col-lg-4 order-2 order-lg-1">
+            <div class="order-2 col-lg-4 order-lg-1">
                 <!-- shop-sidebar-wrap start -->
                 <div class="blog-sidebar-wrap">
 
@@ -39,12 +39,12 @@
                 </div>
                 <!-- shop-sidebar-wrap end -->
             </div>
-            <div class="col-lg-8 order-1 order-lg-2">
+            <div class="order-1 col-lg-8 order-lg-2">
                 <!-- blog-details-wrapper start -->
-                <h3 class="text-bold ml-4 my-3">{{$service->name}}</h3>
+                <h3 class="my-3 ml-4 text-bold">{{$service->name}}</h3>
                 <div class="blog-details-wrapper">
                     <div class="blog-details-image">
-                        <img src="{{asset($service->avatar)}}" width="600px" height="200px" class="img-fluid" alt="">
+                        <img src="{{route("service.image",["filename"=>$service->avatar])}}" width="600px" height="200px" class="img-fluid" alt="">
                     </div>
                     <div class="postinfo-wrapper">
                         <div class="post-info">
@@ -60,16 +60,16 @@
                         <ul  class="nav nav-pills">
                             <li class="active">
                                 @foreach ($subServices as $sub_service)
-                                    <li class="active ml-3 text-uppercase"><a data-toggle="tab" href="#{{$sub_service->id}}">{{$sub_service->name}}</a></li>
+                                    <li class="ml-3 active text-uppercase"><a data-toggle="tab" href="#{{$sub_service->id}}">{{$sub_service->name}}</a></li>
                                 @endforeach
                             </li>
                         </ul>
                         <hr/>
-                        <div class="tab-content clearfix">
+                        <div class="clearfix tab-content">
                             @foreach ($subServices as $sub_service)
                                 <div class="tab-pane @if($sub_service) active @endif" id="{{ $sub_service->id }}">
                                     <h6>{{$sub_service->name}}</h6>
-                                    <p>{{ $sub_service->description }}</p>
+                                    <p>{!! $sub_service->description !!}</p>
                                 </div>
                             @endforeach
                         </div>

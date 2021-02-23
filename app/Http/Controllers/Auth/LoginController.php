@@ -23,6 +23,8 @@ class LoginController extends Controller
     */
 
     use AuthenticatesUsers;
+    
+    protected $guard = 'admin';
 
     /**
      * Where to redirect users after login.
@@ -32,7 +34,7 @@ class LoginController extends Controller
     // protected $redirectTo = RouteServiceProvider::HOME;
 
 
-    protected $redirectTo = 'admin/dashboard';
+    protected $redirectTo = RouteServiceProvider::ADMIN_DASHBOARD;
 
     /**
      * Create a new controller instance.
@@ -45,37 +47,55 @@ class LoginController extends Controller
     }
 
     public function adminLoginForm(){
+        if(Auth::guard('admin')->check()){
+            return redirect()->route('admin.dashboard');
+        }
         return view('auth.admin.login');
     }
 
     public function adminLogin(Request $request)
     {
 
-        $validator = Validator::make($request->all(), [
-            'email'    => 'required|email',
-            'password' => 'required|min:8'
-        ]);
+        // $validator = Validator::make($request->all(), [
+        //     'email'    => 'required|email',
+        //     'password' => 'required|min:8'
+        // ]);
         
 
-        if ($validator->fails()) {
-            return redirect()->back()
-                ->withErrors($validator)
-                ->withInput();
-        }
+        // if ($validator->fails()) {
+        //     return redirect()->back()
+        //         ->withErrors($validator)
+        //         ->withInput();
+        // }
 
-        if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
-            return redirect()->route('admin.dashboard');
-        }else{
-            $validator->errors()->add('email', 'Invalid Email or Password.');
-        return redirect()->back()
-            ->withErrors($validator)
-            ->withInput();
+        // if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
+        //     return redirect()->route('admin.dashboard');
+        // }else{
+        //     $validator->errors()->add('email', 'Invalid Email or Password.');
+        // return redirect()->back()
+        //     ->withErrors($validator)
+        //     ->withInput();
+        // }
+
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+            'password' => 'required'
+        ]);
+        if($validator->fails()){
+            return redirect()->back()->withErrors($validator)->withInput();
         }
+        if (auth()->guard('admin')->attempt(['email' => $request->email, 'password' => $request->password])) {
+            // return redirect()->intended($this->redirectPath());
+            return redirect()->route('admin.dashboard');
+        }
+        return $this->sendFailedLoginResponse($request);
     }
 
     public function adminLogout()
     {
-        Auth::logout();
+        // Auth::logout();
+        // return redirect()->route('admin.login.form');
+        Auth('admin')->logout();
         return redirect()->route('admin.login.form');
     }
 

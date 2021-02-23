@@ -1,4 +1,5 @@
 @extends('layouts.adminLayout')
+@section('title', 'Members')
 @section('content')
 
 
@@ -19,7 +20,7 @@
                             </button>
                         </div>
             
-                        <div class="table-overflow" >                          
+                        <div class="table-overflow" >
                             <table id="dt-opt" class="table table-lg table-hover table-bordered">
                                 <thead>
                                 <tr>
@@ -39,7 +40,7 @@
                                             <td>{{$member->name}}</td>
                                             <td>{{$member->position}}</td>
                                             <td>{{Str::limit($member->description, 15)}}</td>
-                                            <td><img src="{{asset($member->avatar)}}" alt="avatar"
+                                            <td><img src="{{route('user.image',['filename'=>$member->avatar])}}" alt="avatar"
                                                 style="max-width: 2.5rem;" class="img-fluid rounded-circle shadow"></td>
                                             <td>
 
@@ -72,7 +73,7 @@
                                                         <div class="row">
                                                             <div class="col-md-12">
                                                                 <div class="my-4">
-                                                                    <b class="mr-3">Avatar:</b> <img src="{{asset($member->avatar)}}" alt="avatar"
+                                                                    <b class="mr-3">Avatar:</b> <img src="{{route('user.image',['filename'=>$member->avatar])}}" alt="avatar"
                                                                         class="img-fluid rounded-circle shadow">
                                                                 </div>
                                                                 <div class="my-2">
@@ -158,7 +159,7 @@
                                                                     <div class="form-group row">
                                                                         <label for="form-1-1" class="col-md-2 control-label">Avatar</label>
                                                                         <div class="col-md-10">
-                                                                            <img src="{{asset($member->avatar)}}" alt="avatar"
+                                                                            <img src="{{route('user.image',['filename'=>$member->avatar])}}" alt="avatar"
                                                                                 style="max-width: 2.5rem;" class="img-fluid rounded-circle shadow">
                                                                             <input type="file" name="avatar"
                                                                             class="form-control" id="form-1-1" placeholder=" Avatar">

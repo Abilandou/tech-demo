@@ -4,7 +4,7 @@
             <div class="col-lg-4">
                 <!-- logo Start -->
                 <div class="logo">
-                    <a href="{{route('home.page')}}"><img src="{{asset('assets/images/logo/logo.png')}}" alt=""></a>
+                    <a href="{{route('home.page')}}"><img src="{{asset('public/assets/images/logo/logo.png')}}" alt=""></a>
                 </div><!--// logo End -->
             </div>
             <div class="col-lg-8">

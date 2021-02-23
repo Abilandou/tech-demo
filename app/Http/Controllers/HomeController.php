@@ -15,6 +15,7 @@ use App\Enquiry;
 use App\ItemCategory;
 use App\Contact;
 use App\Traits\MessageServiceTrait;
+use Illuminate\Support\Facades\File;
 
 class HomeController extends Controller
 {
@@ -39,7 +40,8 @@ class HomeController extends Controller
         $page_name = "Home";
         $services = Service::paginate(3);
         $testimonies = Testimonial::all();
-        return view('welcome')->with(compact('page_name', 'services', 'testimonies'));
+        $plans= \App\Plan::take(3)->get();
+        return view('welcome')->with(compact('page_name', 'services', 'testimonies', 'plans'));
     }
 
     public function home()
@@ -47,7 +49,9 @@ class HomeController extends Controller
         $page_name = "Home";
         $testimonies = Testimonial::all();
         $services = Service::paginate(3);
-        return view('welcome')->with(compact('page_name', 'services', 'testimonies'));
+        $plans= \App\Plan::take(3)->get();
+
+        return view('welcome')->with(compact('page_name', 'services', 'testimonies', 'plans'));
     }
 
     public function about(){
@@ -146,10 +150,7 @@ class HomeController extends Controller
             return redirect()->back();
         }
     }
-
-
     
-
     public function shopItems()
     {
         $items = Item::paginate(15);
@@ -178,19 +179,29 @@ class HomeController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }
         $enq = new Enquiry();
-        $enq->name = $request->name;
-        $enq->email = $request->email;
-        $enq->phone = $request->phone;
-        $enq->enquiry = $request->enquiry;
-        $enq->item = $request->item;
-        $enq->save();
-        if($enq){
+       
+        if($request->type == "item"){
+            $enq->name = $request->name;
+            $enq->email = $request->email;
+            $enq->phone = $request->phone;
+            $enq->enquiry = $request->enquiry;
+            $enq->entity = $request->item;
+            $enq->type = "item";
+            $enq->save();
             session()->flash('info', 'Enquiry Placed successfully');
             return redirect()->back();
         }else{
-            session()->flash('error', 'Unable to Place enquiry');
+            $enq->name = $request->name;
+            $enq->email = $request->email;
+            $enq->phone = $request->phone;
+            $enq->enquiry = $request->enquiry;
+            $enq->entity = $request->item;
+            $enq->type = "plan";
+            $enq->save();
+            session()->flash('info', 'Enquiry Placed successfully');
             return redirect()->back();
         }
+
     }
 
     public function itemByCategory(Request $request, $category){
@@ -202,6 +213,60 @@ class HomeController extends Controller
         }else{
             abort(404);
         }
+    }
+
+
+
+
+    public function blogImage($filename)
+    {
+        $path = storage_path() . '/app/public/blogs/'.$filename;
+        if(!File::exists($path)) abort(404);
+        $file = File::get($path);
+        $type = File::mimeType($path);
+        $response = \Response::make($file, 200);
+        $response->header("Content-Type", $type);
+        return $response;
+    }
+
+    public function itemImage($filename){
+        $path = storage_path() . '/app/public/items/'.$filename;
+        if(!File::exists($path)) abort(404);
+        $file = File::get($path);
+        $type = File::mimeType($path);
+        $response = \Response::make($file, 200);
+        $response->header("Content-Type", $type);
+        return $response;
+    }
+
+    public function userImage($filename){
+        $path = storage_path() . '/app/public/users/'.$filename;
+        if(!File::exists($path)) abort(404);
+        $file = File::get($path);
+        $type = File::mimeType($path);
+        $response = \Response::make($file, 200);
+        $response->header("Content-Type", $type);
+        return $response;
+    }
+
+    public function serviceImage($filename){
+        $path = storage_path() . '/app/public/service/'.$filename;
+        if(!File::exists($path)) abort(404);
+        $file = File::get($path);
+        $type = File::mimeType($path);
+        $response = \Response::make($file, 200);
+        $response->header("Content-Type", $type);
+        return $response;
+    }
+
+    public function testimonyImage($filename){
+        $path = storage_path() . '/app/public/testimony/'.$filename;
+        if(!File::exists($path)) abort(404);
+        $file = File::get($path);
+        $type = File::mimeType($path);
+        $response = \Response::make($file, 200);
+        $response->header("Content-Type", $type);
+        return $response;
     }
 
 }

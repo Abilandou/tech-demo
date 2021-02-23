@@ -13,16 +13,12 @@
                         <div class="single-latest-blog mb--30">
                             <div class="latest-blog-image">
                                 <a href="{{route('single.blog',['url'=>$blog->url])}}">
-                                    @if($blog->avatar == null)
-                                        <img src="{{asset('assets/images/techfavicon.jpg')}}" alt="">
-                                    @else
-                                        <img src="{{asset($blog->avatar)}}" alt="">
-                                    @endif
-                                    </a>
+                                    <img style="height: 250px; width:100%;" src="{{route('blog.image',["filename" => $blog->avatar])}}" alt="">
+                                </a>
                             </div>
                             <div class="latest-blog-cont">
                                 <h3><a href="{{route('single.blog',['url'=>$blog->url])}}">{{$blog->title}}</a></h3>
-                                <p>{{$blog->description}}</p>
+                                <p class="text-justify">{!! Str::limit($blog->description, 150) !!}</p>
                             </div>
                         </div><!--// single-latest-blog End -->
                     </div>

@@ -46,21 +46,21 @@ class CmsPagesController extends Controller
         $service->name = $request->name;
         $service->description = $request->description;
         $service->url = strtolower(str_replace(' ', '-', $request->name));
-        if($request->hasFile('avatar')){
-             // filename with extension
-             $fileNameWithExt = $request->file('avatar')->getClientOriginalName();
-             // filename
-             $filename = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
-             // extension
-             $extension = $request->file('avatar')->getClientOriginalExtension();
-             // filename to store
-             $fileNameToStore = $filename.'_'.time().'.'.$extension;
-
-             $path = $request->file('avatar')->move('avatars/services/', $fileNameToStore);
-
-             $path_name = $path->getPathname();
+        if($request->hasFile('avatar'))
+        {
+            // $path = $request->file('profile')->move(storage_path('profiles/users'));
+            // $file_name = basename($path);
+            $fileNameWithExt = $request->file('avatar')->getClientOriginalName();
+            // filename
+            $filename = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
+            // extension
+            $extension = $request->file('avatar')->getClientOriginalExtension();
+            // filename to store
+            $fileNameToStore = $filename.'_'.time().'.'.$extension;
+            $path = $request->file('avatar')->store('public/service');
+            $file_name = basename($path);
         }
-        $service->avatar = $path_name;
+        $service->avatar = $file_name;
         $service->save();
         if($service){
             session()->flash('success', 'Service Added successfully');
@@ -77,9 +77,8 @@ class CmsPagesController extends Controller
             'name' => 'required|min:3',
         ]);
 
-         //Handle file upload for the avatar
-         if($request->hasFile('avatar')){
-            // filename with extension
+        if($request->hasFile('avatar'))
+        {
             $fileNameWithExt = $request->file('avatar')->getClientOriginalName();
             // filename
             $filename = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
@@ -87,30 +86,28 @@ class CmsPagesController extends Controller
             $extension = $request->file('avatar')->getClientOriginalExtension();
             // filename to store
             $fileNameToStore = $filename.'_'.time().'.'.$extension;
-
-            $path = $request->file('avatar')->move('avatars/services/', $fileNameToStore);
-
-            $path_name = $path->getPathname();
-       }
-       // Incase no image was not selected when trying to update profile information, maintain the previous image.
-       if(empty($path_name)){
-           $the_path = Service::where(['id'=>$service_id])->first();
-           $get_path = $the_path->avatar;
-           $path_name = $get_path;
-       }
-       $service = Service::where(['id'=>$service_id])->update([
-           'name' => $request->name,
-           'description' => $request->description,
-           'url'  => strtolower(str_replace(' ', '-', $request->name)),
-           'avatar' => $path_name
-       ]);
-       if($service){
-           session()->flash('success', 'Service Updated successfully');
+            $path = $request->file('avatar')->store('public/service');
+            $file_name = basename($path);
+        }
+        
+        if(empty($file_name)){
+            $the_file = Service::where(['id'=>$service_id])->first();
+            $file_name = $the_file->photo;
+        }
+        
+        try {
+            Service::where(['id'=>$service_id])->update([
+                'name' => $request->name,
+                'description' => $request->description,
+                'url'  => strtolower(str_replace(' ', '-', $request->name)),
+                'avatar' => $file_name
+            ]);
+            session()->flash('success', 'Service Updated successfully');
            return redirect()->back();
-       }else{
-           session()->flash('error', 'Unable to update service, Possible internet error');
-           return redirect()->back();
-       }
+        }catch(\Exception $ex){
+            session()->flash('error', 'Unable to update Service, Possible internet error');
+            return redirect()->back();
+        }
 
     }
 
@@ -152,21 +149,21 @@ class CmsPagesController extends Controller
         $sub_service->service_id = $request->service_id;
         $sub_service->description = $request->description;
         $sub_service->url = strtolower(str_replace(' ', '-', $request->name));
-        if($request->hasFile('avatar')){
-             // filename with extension
-             $fileNameWithExt = $request->file('avatar')->getClientOriginalName();
-             // filename
-             $filename = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
-             // extension
-             $extension = $request->file('avatar')->getClientOriginalExtension();
-             // filename to store
-             $fileNameToStore = $filename.'_'.time().'.'.$extension;
-
-             $path = $request->file('avatar')->move('avatars/sub_services/', $fileNameToStore);
-
-             $path_name = $path->getPathname();
+        if($request->hasFile('avatar'))
+        {
+            // $path = $request->file('profile')->move(storage_path('profiles/users'));
+            // $file_name = basename($path);
+            $fileNameWithExt = $request->file('avatar')->getClientOriginalName();
+            // filename
+            $filename = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
+            // extension
+            $extension = $request->file('avatar')->getClientOriginalExtension();
+            // filename to store
+            $fileNameToStore = $filename.'_'.time().'.'.$extension;
+            $path = $request->file('avatar')->store('public/service');
+            $file_name = basename($path);
         }
-        $sub_service->avatar = $path_name;
+        $sub_service->avatar = $file_name;
         $sub_service->save();
         if($sub_service){
             session()->flash('success', 'Service Added successfully');
@@ -184,9 +181,9 @@ class CmsPagesController extends Controller
             'service_id' => 'required'
         ]);
 
-         //Handle file upload for the avatar
-         if($request->hasFile('avatar')){
-            // filename with extension
+
+        if($request->hasFile('avatar'))
+        {
             $fileNameWithExt = $request->file('avatar')->getClientOriginalName();
             // filename
             $filename = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
@@ -194,31 +191,29 @@ class CmsPagesController extends Controller
             $extension = $request->file('avatar')->getClientOriginalExtension();
             // filename to store
             $fileNameToStore = $filename.'_'.time().'.'.$extension;
-
-            $path = $request->file('avatar')->move('avatars/sub_services/', $fileNameToStore);
-
-            $path_name = $path->getPathname();
-       }
-       // Incase no image was not selected when trying to update profile information, maintain the previous image.
-       if(empty($path_name)){
-           $the_path = SubService::where(['id'=>$sub_service_id])->first();
-           $get_path = $the_path->avatar;
-           $path_name = $get_path;
-       }
-       $sub_service = SubService::where(['id'=>$sub_service_id])->update([
-           'name' => $request->name,
-           'description' => $request->description,
-           'service_id' => $request->service_id,
-           'url'  => strtolower(str_replace(' ', '-', $request->name)),
-           'avatar' => $path_name
-       ]);
-       if($sub_service){
-           session()->flash('success', 'Service Updated successfully');
+            $path = $request->file('avatar')->store('public/service');
+            $file_name = basename($path);
+        }
+        
+        if(empty($file_name)){
+            $the_file = SubService::where(['id'=>$sub_service_id])->first();
+            $file_name = $the_file->photo;
+        }
+        
+        try {
+            SubService::where(['id'=>$sub_service_id])->update([
+                'name' => $request->name,
+                'description' => $request->description,
+                'service_id' => $request->service_id,
+                'url'  => strtolower(str_replace(' ', '-', $request->name)),
+                'avatar' => $file_name
+            ]);
+            session()->flash('success', 'Service Updated successfully');
            return redirect()->back();
-       }else{
-           session()->flash('error', 'Unable to update service, Possible internet error');
-           return redirect()->back();
-       }
+        }catch(\Exception $ex){
+            session()->flash('error', 'Unable to update Service, Possible internet error');
+            return redirect()->back();
+        }
 
     }
 
@@ -258,21 +253,22 @@ class CmsPagesController extends Controller
         $testimony->name = $request->name;
         $testimony->profession = $request->profession;
         $testimony->testimony = $request->testimony;
-        if($request->hasFile('avatar')){
-             // filename with extension
-             $fileNameWithExt = $request->file('avatar')->getClientOriginalName();
-             // filename
-             $filename = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
-             // extension
-             $extension = $request->file('avatar')->getClientOriginalExtension();
-             // filename to store
-             $fileNameToStore = $filename.'_'.time().'.'.$extension;
-
-             $path = $request->file('avatar')->move('avatars/testimonies/', $fileNameToStore);
-
-             $path_name = $path->getPathname();
+        $file_name = "default.jpg";
+        if($request->hasFile('avatar'))
+        {
+            // $path = $request->file('profile')->move(storage_path('profiles/users'));
+            // $file_name = basename($path);
+            $fileNameWithExt = $request->file('avatar')->getClientOriginalName();
+            // filename
+            $filename = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
+            // extension
+            $extension = $request->file('avatar')->getClientOriginalExtension();
+            // filename to store
+            $fileNameToStore = $filename.'_'.time().'.'.$extension;
+            $path = $request->file('avatar')->store('public/testimony');
+            $file_name = basename($path);
         }
-        $testimony->avatar = $path_name;
+        $testimony->avatar = $file_name;
         $testimony->save();
         if($testimony){
             session()->flash('success', 'testimony Added successfully');
@@ -293,9 +289,8 @@ class CmsPagesController extends Controller
             'testimony' => 'required'
         ]);
 
-         //Handle file upload for the avatar
-         if($request->hasFile('avatar')){
-            // filename with extension
+        if($request->hasFile('avatar'))
+        {
             $fileNameWithExt = $request->file('avatar')->getClientOriginalName();
             // filename
             $filename = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
@@ -303,31 +298,28 @@ class CmsPagesController extends Controller
             $extension = $request->file('avatar')->getClientOriginalExtension();
             // filename to store
             $fileNameToStore = $filename.'_'.time().'.'.$extension;
+            $path = $request->file('avatar')->store('public/testimony');
+            $file_name = basename($path);
+        }
 
-            $path = $request->file('avatar')->move('avatars/testimonies/', $fileNameToStore);
+        if(empty($file_name)){
+            $the_file = Testimonial::where(['id'=>$testimony_id])->first();
+            $file_name = $the_file->photo;
+        }
 
-            $path_name = $path->getPathname();
-       }
-       // Incase no image was not selected when trying to update profile information, maintain the previous image.
-       if(empty($path_name)){
-           $the_path = Testimonial::where(['id'=>$testimony_id])->first();
-           $get_path = $the_path->avatar;
-           $path_name = $get_path;
-       }
-       $testimony = Testimonial::where(['id'=>$testimony_id])->update([
-           'name' => $request->name,
-           'profession' => $request->profession,
-           'testimony' => $request->testimony,
-           'avatar' => $path_name
-       ]);
-       if($testimony){
-           session()->flash('success', 'testimony Updated successfully');
+        try {
+            Testimonial::where(['id'=>$testimony_id])->update([
+                'name' => $request->name,
+                'profession' => $request->profession,
+                'testimony' => $request->testimony,
+                'avatar' => $file_name
+            ]);
+            session()->flash('success', 'Testimony Updated successfully');
            return redirect()->back();
-       }else{
-           session()->flash('error', 'Unable to update testimony, Possible internet error');
-           return redirect()->back();
-       }
-
+        }catch(\Exception $ex){
+            session()->flash('error', 'Unable to update Testimony, Possible internet error');
+            return redirect()->back();
+        }
     }
 
 
@@ -369,21 +361,21 @@ class CmsPagesController extends Controller
         $member->youtube = $request->youtube;
         $member->facebook = $request->facebook;
         $member->twitter = $request->twitter;
-        if($request->hasFile('avatar')){
-             // filename with extension
-             $fileNameWithExt = $request->file('avatar')->getClientOriginalName();
-             // filename
-             $filename = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
-             // extension
-             $extension = $request->file('avatar')->getClientOriginalExtension();
-             // filename to store
-             $fileNameToStore = $filename.'_'.time().'.'.$extension;
-
-             $path = $request->file('avatar')->move('avatars/members/', $fileNameToStore);
-
-             $path_name = $path->getPathname();
+        if($request->hasFile('avatar'))
+        {
+            // $path = $request->file('profile')->move(storage_path('profiles/users'));
+            // $file_name = basename($path);
+            $fileNameWithExt = $request->file('avatar')->getClientOriginalName();
+            // filename
+            $filename = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
+            // extension
+            $extension = $request->file('avatar')->getClientOriginalExtension();
+            // filename to store
+            $fileNameToStore = $filename.'_'.time().'.'.$extension;
+            $path = $request->file('avatar')->store('public/users');
+            $file_name = basename($path);
         }
-        $member->avatar = $path_name;
+        $member->avatar = $file_name;
         $member->save();
         if($member){
             session()->flash('success', 'member Added successfully');
@@ -402,9 +394,8 @@ class CmsPagesController extends Controller
             'position' => 'required|min:3',
         ]);
 
-         //Handle file upload for the avatar
-         if($request->hasFile('avatar')){
-            // filename with extension
+         if($request->hasFile('avatar'))
+        {
             $fileNameWithExt = $request->file('avatar')->getClientOriginalName();
             // filename
             $filename = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
@@ -412,34 +403,32 @@ class CmsPagesController extends Controller
             $extension = $request->file('avatar')->getClientOriginalExtension();
             // filename to store
             $fileNameToStore = $filename.'_'.time().'.'.$extension;
-
-            $path = $request->file('avatar')->move('avatars/members/', $fileNameToStore);
-
-            $path_name = $path->getPathname();
-       }
-       // Incase no image was not selected when trying to update profile information, maintain the previous image.
-       if(empty($path_name)){
-           $the_path = Member::where(['id'=>$member_id])->first();
-           $get_path = $the_path->avatar;
-           $path_name = $get_path;
-       }
-       $member = Member::where(['id'=>$member_id])->update([
-           'name' => $request->name,
-           'position' => $request->position,
-           'description' => $request->description,
-           'url'  => strtolower(str_replace(' ', '-', $request->name)),
-           'youtube' => $request->youtube,
-           'facebook' => $request->facebook,
-           'twitter' => $request->twitter,
-           'avatar' => $path_name
-       ]);
-       if($member){
-           session()->flash('success', 'member Updated successfully');
+            $path = $request->file('avatar')->store('public/users');
+            $file_name = basename($path);
+        }
+        
+        if(empty($file_name)){
+            $the_file = Member::where(['id'=>$member_id])->first();
+            $file_name = $the_file->photo;
+        }
+        
+        try {
+            Member::where(['id'=>$member_id])->update([
+                'name' => $request->name,
+                'position' => $request->position,
+                'description' => $request->description,
+                'url'  => strtolower(str_replace(' ', '-', $request->name)),
+                'youtube' => $request->youtube,
+                'facebook' => $request->facebook,
+                'twitter' => $request->twitter,
+                'avatar' => $file_name
+            ]);
+            session()->flash('success', 'Member Updated successfully');
            return redirect()->back();
-       }else{
-           session()->flash('error', 'Unable to update member, Possible internet error');
-           return redirect()->back();
-       }
+        }catch(\Exception $ex){
+            session()->flash('error', 'Unable to update Member, Possible internet error');
+            return redirect()->back();
+        }
 
     }
 

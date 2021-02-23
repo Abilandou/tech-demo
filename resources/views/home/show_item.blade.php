@@ -8,7 +8,7 @@
         <div class="row">
             <div class="col-lg-6 order-2 order-lg-1">
                 <div class="blog-details-image">
-                    <img src="{{asset($item->avatar)}}" width="600px" height="200px" class="img-fluid" alt="">
+                    <img src="{{route("item.image",['filename'=>$item->avatar])}}" width="600px" height="200px" class="img-fluid" alt="">
                 </div>
             </div>
             <div class="col-lg-6 order-1 order-lg-2">
@@ -45,6 +45,7 @@
           <form action="{{ route('make.enquiry') }}" method="POST">
             @csrf
             <input type="hidden" name="item" value="{{ $item->name }}">
+            <input type="hidden" name="type" value="item">
               <div class="row">
                   <div class="col-sm-12 col-md-12 col-lg-12">
                       <div class="form-group">
@@ -117,7 +118,7 @@
         </form>
       </div>
     </div>
-  </div>
+</div>
 
 
 @endsection

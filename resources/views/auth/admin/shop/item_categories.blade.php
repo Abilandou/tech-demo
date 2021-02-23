@@ -1,6 +1,6 @@
 @extends('layouts.adminLayout')
+@section('title', 'Item Categories')
 @section('content')
-
 
 <!-- Content Wrapper START -->
 <div class="main-content">
@@ -19,7 +19,7 @@
                             </button>
                         </div>
             
-                        <div class="table-overflow" >                          
+                        <div class="table-overflow">
                             <table id="dt-opt" class="table table-lg table-hover table-bordered">
                                 <thead>
                                 <tr>
@@ -167,7 +167,6 @@
         </div>
 
     </div>
-</div>
 
 
 @endsection

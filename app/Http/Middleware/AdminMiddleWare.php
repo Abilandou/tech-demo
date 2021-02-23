@@ -16,12 +16,10 @@ class AdminMiddleWare
      */
     public function handle($request, Closure $next)
     {
-        if(Auth::guard('admin')->check()){
-            return $next($request);
-        }else{
-            session()->flash('error', 'Invalid Action');
+        if (!Auth::guard('admin')->check()) {
             return redirect()->route('admin.login.form');
         }
+        return $next($request);
         
     }
 }

@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Database\Seeder;
-use App\User;
+use App\Admin;
 
 class AdminSeeder extends Seeder
 {
@@ -13,7 +13,7 @@ class AdminSeeder extends Seeder
     public function run()
     {
         //
-        if (User::count() > 0) {
+        if (Admin::count() > 0) {
             return;
         }
 
@@ -32,7 +32,7 @@ class AdminSeeder extends Seeder
 
         foreach($admins as $admin)
         {
-            User::create($admin);
+            Admin::create($admin);
         }
     }
 }

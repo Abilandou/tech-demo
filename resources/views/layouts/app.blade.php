@@ -10,29 +10,34 @@
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- Favicon -->
-    <link rel="shortcut icon" type="image/x-icon" href="{{asset('assets/images/techfavicon.jpg')}}">
+    <link rel="shortcut icon" type="image/x-icon" href="{{asset('public/assets/images/techfavicon.jpg')}}">
     
     <!-- CSS 
     ========================= -->
    
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="{{asset('assets/css/bootstrap.min.css')}}">
+    <link rel="stylesheet" href="{{asset('public/assets/css/bootstrap.min.css')}}">
     
     <!-- Fonts CSS -->
-    <link rel="stylesheet" href="{{asset('assets/css/bicon.min.css')}}">
+    <link rel="stylesheet" href="{{asset('public/assets/css/bicon.min.css')}}">
     
     <!-- Plugins CSS -->
-    <link rel="stylesheet" href="{{asset('assets/css/plugins.css')}}">
+    <link rel="stylesheet" href="{{asset('public/assets/css/plugins.css')}}">
     
     <!-- Main Style CSS -->
-    <link rel="stylesheet" href="{{asset('assets/css/style.css')}}">
+    <link rel="stylesheet" href="{{asset('public/assets/css/style.css')}}">
     
     <!-- Modernizer JS -->
-    <script src="{{asset('assets/js/vendor/modernizr-2.8.3.min.js')}}"></script>
+    <script src="{{asset('public/assets/js/vendor/modernizr-2.8.3.min.js')}}"></script>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <link href="{{ asset('toastr/toastr.min.css') }}" rel="stylesheet">
-    <script src="{{ asset('toastr/toastr.min.js') }}"></script>
+    <link href="{{ asset('public/toastr/toastr.min.css') }}" rel="stylesheet">
+    <script src="{{ asset('public/toastr/toastr.min.js') }}"></script>
+    <style>
+        a#scrollUp {
+            content: "dd" !important;
+        }
+    </style>
 
     @yield('header-style')
 </head>
@@ -51,91 +56,23 @@
     </div>
 
     <!-- Footer Area Start -->
-<footer class="footer-area bg-grey">
-    <!-- Footer-top Start -->
-    <div class="footer-top">
-        <div class="container">
-            <div class="row">
-                <div class="col">
-                    <div class="footer-top-inner pt--50 pb--100">
-                        <div class="row">
-                            <div class="col-lg-4 col-md-6">
-                                <!-- Footer-info Start -->
-                                <div class="footer-info mt--60">
-                                    <div class="footer-logo">
-                                        <a href="#"><img src="{{asset('assets/images/logo/logo.png')}}" alt=""></a>
-                                    </div>
-                                    <p>It is a long established fact that a reader will page when looking at its layout.  all reader will page when looking </p>
-                                    <ul class="social">
-                                        <li><a href="#"><i class="bi bi-facebook"></i></a></li>
-                                        <li><a href="#"><i class="bi bi-twitter-bird"></i></a></li>
-                                        <li><a href="#"><i class="bi bi-twitter"></i></a></li>
-                                        <li><a href="#"><i class="bi bi-youtube"></i></a></li>
-                                    </ul>
-                                </div><!--// Footer-info End -->
-                            </div>
-                            <div class="col-lg-4 col-md-6">
-                                <!-- Footer-info Start -->
-                                <div class="footer-info  mt--60">
-                                    <div class="footer-title">
-                                        <h3>SERVICES</h3>
-                                    </div>
-                                    <ul class="footer-list">
-                                        <li><a href="#">Heating Repair</a></li>
-                                        <li><a href="#">Plumbing Services</a></li>
-                                        <li><a href="#">Conditioning Repair</a></li>
-                                        <li><a href="#">Electrical Services</a></li>
-                                    </ul>
-                                </div><!--// Footer-info End -->
-                            </div>
-                            <div class="col-lg-4  col-md-6">
-                                <!-- Footer-info Start -->
-                                <div class="footer-info  mt--60">
-                                    <div class="footer-title">
-                                        <h3>QUICK CONTACT</h3>
-                                    </div>
-                                    <ul class="footer-list">
-                                        <li>Bluesitline, 4/3 north corn <br> walinon, Usa.</li>
-                                        <li><a href="#">seomar11@gmail.com</a></li>
-                                        <li><a href="#">+88345 789 456</a></li>
-                                    </ul>
-                                </div><!--// Footer-info End -->
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div><!--// Footer-top End -->
-    
-    <!-- footer-bottom Start -->
-    <div class="footer-bottom">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="footer-bottom-inner text-black text-center">
-                        <p>Copyright &copy; Tech-Republic <?php echo(date('Y'))?> All Right Reserved</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div><!--// footer-bottom End -->
-</footer>
+
+@include('layouts.footer')
 <!-- Footer Area End -->
 </body>
 
 <!-- jQuery JS -->
-<script src="{{asset('assets/js/vendor/jquery-1.12.4.min.js')}}"></script>
+<script src="{{asset('public/assets/js/vendor/jquery-1.12.4.min.js')}}"></script>
 <!-- Popper JS -->
-<script src="{{asset('assets/js/popper.min.js')}}"></script>
+<script src="{{asset('public/assets/js/popper.min.js')}}"></script>
 <!-- Bootstrap JS -->
-<script src="{{asset('assets/js/bootstrap.min.js')}}"></script>
+<script src="{{asset('public/assets/js/bootstrap.min.js')}}"></script>
 <!-- Plugins JS -->
-<script src="{{asset('assets/js/plugins.js')}}"></script>
+<script src="{{asset('public/assets/js/plugins.js')}}"></script>
 <!-- Ajax Mail -->
-<script src="{{asset('assets/js/ajax-mail.js')}}"></script>
+<script src="{{asset('public/assets/js/ajax-mail.js')}}"></script>
 <!-- Main JS -->
-<script src="{{asset('assets/js/main.js')}}"></script>
+<script src="{{asset('public/assets/js/main.js')}}"></script>
 
 @include('includes.message')
 

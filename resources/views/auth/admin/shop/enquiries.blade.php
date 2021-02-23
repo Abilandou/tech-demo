@@ -1,4 +1,5 @@
 @extends('layouts.adminLayout')
+@section('title', 'Item Enquiries')
 @section('content')
 
 
@@ -32,7 +33,7 @@
                                             <td>{{$enq->name}}</td>
                                             <td>{{ $enq->email }}</td>
                                             <td>{{ $enq->phone }}</td>
-                                            <td>{{ $enq->item }}</td>
+                                            <td>{{ $enq->entity }}</td>
                                             <td>
                                                 <button data-toggle="modal" data-target="#enq-modal{{$enq->id}}" 
                                                     class="btn btn-sm btn-success">
@@ -68,7 +69,7 @@
                                                                     <b>Phone:</b> {{ $enq->phone }}
                                                                 </div>
                                                                 <div class="my-2">
-                                                                    <b>Item:</b> {{ $enq->item }}
+                                                                    <b>Item:</b> {{ $enq->entity }}
                                                                 </div>
                                                                 <div class="my-2">
                                                                     <b>Enquiry:</b> {{ $enq->enquiry }}

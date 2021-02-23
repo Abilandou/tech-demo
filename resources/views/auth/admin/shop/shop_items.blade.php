@@ -1,4 +1,5 @@
 @extends('layouts.adminLayout')
+@section('title', 'Shop Items')
 @section('content')
 
 
@@ -37,17 +38,13 @@
                                             <td>{{ $i++ }}</td>
                                             <td>{{$shop_item->name}}</td>
                                             <td>{{Str::limit($shop_item->description, 15)}}</td>
-                                            <td><img src="{{asset($shop_item->avatar)}}" alt="avatar"
+                                            <td><img src="{{route('item.image',['filename'=>$shop_item->avatar])}}" alt="avatar"
                                                 style="max-width: 2.5rem;" class="img-fluid rounded-circle shadow"></td>
                                             <td>
 
                                                 <button data-toggle="modal" data-target="#shop_item-modal{{$shop_item->id}}" 
                                                     class="btn btn-sm btn-success">
                                                     <i class="ti-eye">View</i>
-                                                </button>
-                                                <button data-toggle="modal" data-target="#shop_item-add-attribute-modal{{$shop_item->id}}" 
-                                                    class="btn btn-sm btn-secondary">
-                                                    <i class="ti-plus">Add Attribute</i>
                                                 </button>
                                                 <button data-toggle="modal" data-target="#shop_item-edit-modal{{$shop_item->id}}" 
                                                     class="btn btn-sm btn-primary">
@@ -75,7 +72,7 @@
                                                         <div class="row">
                                                             <div class="col-md-12">
                                                                 <div class="my-4">
-                                                                    <b class="mr-3">Avatar:</b> <img src="{{asset($shop_item->avatar)}}" alt="avatar"
+                                                                    <b class="mr-3">Avatar:</b> <img src="{{route('item.image',['filename'=>$shop_item->avatar])}}" alt="avatar"
                                                                         class="img-fluid rounded-circle shadow">
                                                                 </div>
                                                                 <div class="my-2">
@@ -137,7 +134,7 @@
                                                                     <div class="form-group row">
                                                                         <label for="form-1-1" class="col-md-2 control-label">Avatar</label>
                                                                         <div class="col-md-10">
-                                                                            <img src="{{asset($shop_item->avatar)}}" alt="avatar"
+                                                                            <img src="{{route('item.image',['filename'=>$shop_item->avatar])}}" alt="avatar"
                                                                                 style="max-width: 2.5rem;" class="img-fluid rounded-circle shadow">
                                                                             <input type="file" name="avatar"
                                                                             class="form-control" id="form-1-1" placeholder=" Avatar">
@@ -155,51 +152,6 @@
                                                 </div>
                                             </div>
                                         </div>
-
-                                        {{-- Add shop_item attribute Modal --}}
-                                        <div class="modal fade" id="shop_item-add-attribute-modal{{$shop_item->id}}">
-                                            <div class="modal-dialog modal-lg" role="document">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h4 class="text-center">Adding Attributes For: {{$shop_item->name}}</h4>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        <div class="row">
-                                                            <div class="col-md-12">
-                                                                <form action="{{ route('shop.item.add.attribute',['item_id'=>$shop_item->id]) }}" method="POST" class="form-horizontal mrg-top-40 pdd-right-30" enctype="multipart/form-data">
-                                                                    @csrf
-                                                                    <input type="hidden" value="{{$shop_item->id}}" name="item_id" required>
-                                                                    <div id="inputFile" class="form-group">
-                                                                        <div class="mb-5 position-relative input-section">
-                                                                            <div>
-                                                                                <label for="form-1-1">Other Images(Add More input by clicking the add button below the input)</label>
-                                                                                    <input type="file" class="form-control @error('the_image') is-invalid @enderror" name="the_image[]"  required autocomplete="the_image" autofocus>
-                                                                                @error('the_image')
-                                                                                    <span class="invalid-feedback text-center" role="alert">
-                                                                                        <strong>{{ $message }}</strong>
-                                                                                    </span>
-                                                                                @enderror
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div>
-                                                                        <button type="button" class="btn btn-primary btn-mini btn-rounded " id="addFile" style="margin-top:-30px; float:right">
-                                                                            <i class="ti-plus"></i>
-                                                                        </button>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="modal-footer float-right">
-                                                                    <button type="button" data-dismiss="modal" class="btn btn-secondary">Close</button>
-                                                                    <button type="submit" class="btn btn-primary">Add</button>
-                                                                </div>
-                                                            </form>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
                                     @endforeach
                                 </tbody>
                             </table>

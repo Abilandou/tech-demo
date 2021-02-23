@@ -112,21 +112,22 @@ class ShopController extends Controller
         $item->description = $request->description;
         $item->url = strtolower(str_replace(' ', '-', $request->name));
         $item->item_category_id = $request->item_category_id;
-        if($request->hasFile('avatar')){
-             // filename with extension
-             $fileNameWithExt = $request->file('avatar')->getClientOriginalName();
-             // filename
-             $filename = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
-             // extension
-             $extension = $request->file('avatar')->getClientOriginalExtension();
-             // filename to store
-             $fileNameToStore = $filename.'_'.time().'.'.$extension;
 
-             $path = $request->file('avatar')->move('avatars/items/', $fileNameToStore);
-
-             $path_name = $path->getPathname();
+        if($request->hasFile('avatar'))
+        {
+            // $path = $request->file('profile')->move(storage_path('profiles/users'));
+            // $file_name = basename($path);
+            $fileNameWithExt = $request->file('avatar')->getClientOriginalName();
+            // filename
+            $filename = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
+            // extension
+            $extension = $request->file('avatar')->getClientOriginalExtension();
+            // filename to store
+            $fileNameToStore = $filename.'_'.time().'.'.$extension;
+            $path = $request->file('avatar')->store('public/items');
+            $file_name = basename($path);
         }
-        $item->avatar = $path_name;
+        $item->avatar = $file_name;
         $item->save();
         if($item){
             session()->flash('success', 'item Added successfully');
@@ -144,9 +145,8 @@ class ShopController extends Controller
             'name' => 'required|min:3',
         ]);
 
-         //Handle file upload for the avatar
-         if($request->hasFile('avatar')){
-            // filename with extension
+        if($request->hasFile('avatar'))
+        {
             $fileNameWithExt = $request->file('avatar')->getClientOriginalName();
             // filename
             $filename = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
@@ -154,31 +154,30 @@ class ShopController extends Controller
             $extension = $request->file('avatar')->getClientOriginalExtension();
             // filename to store
             $fileNameToStore = $filename.'_'.time().'.'.$extension;
-
-            $path = $request->file('avatar')->move('avatars/items/', $fileNameToStore);
-
-            $path_name = $path->getPathname();
-       }
-       // Incase no image was not selected when trying to update profile information, maintain the previous image.
-       if(empty($path_name)){
-           $the_path = Item::where(['id'=>$shop_item_id])->first();
-           $get_path = $the_path->avatar;
-           $path_name = $get_path;
-       }
-       $item = Item::where(['id'=>$shop_item_id])->update([
-           'name' => $request->name,
-           'description' => $request->description,
-           'url'  => strtolower(str_replace(' ', '-', $request->name)),
-           'item_category_id' => $request->item_category_id,
-           'avatar' => $path_name
-       ]);
-       if($item){
-           session()->flash('success', 'item Updated successfully');
+            $path = $request->file('avatar')->store('public/items');
+            $file_name = basename($path);
+        }
+        
+        if(empty($file_name)){
+            $the_file = Item::where(['id'=>$shop_item_id])->first();
+            $file_name = $the_file->photo;
+        }
+        
+        try {
+            Item::where(['id'=>$shop_item_id])->update([
+                'name' => $request->name,
+                'description' => $request->description,
+                'url'  => strtolower(str_replace(' ', '-', $request->name)),
+                'item_category_id' => $request->item_category_id,
+                'avatar' => $file_name
+            ]);
+            session()->flash('success', 'Item Updated successfully');
            return redirect()->back();
-       }else{
-           session()->flash('error', 'Unable to update item, Possible internet error');
-           return redirect()->back();
-       }
+        }catch(\Exception $ex){
+            session()->flash('error', 'Unable to update Item, Possible internet error');
+            return redirect()->back();
+        }
+
 
     }
 
@@ -228,7 +227,7 @@ class ShopController extends Controller
 
     public function enquiries()
     {
-        $enquiries = Enquiry::all();
+        $enquiries = Enquiry::where('type', 'item')->get();
         return view('auth.admin.shop.enquiries')->with(compact('enquiries'));
     }
 

@@ -18,7 +18,8 @@ class CreateEnquiriesTable extends Migration
             $table->string('name');
             $table->string('email');
             $table->string('phone');
-            $table->string('item');
+            $table->enum('type', ['item', 'plan'])->default('item');
+            $table->string('entity');
             $table->text('enquiry');
             $table->timestamps();
         });

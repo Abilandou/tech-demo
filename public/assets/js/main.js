@@ -152,7 +152,7 @@ $('.counter-active').counterUp({
     ScrollUp Active
 -----------------------------------*/
 $.scrollUp({
-    scrollText: '<img src="assets/images/icon/up.png" alt="caret" />',
+    scrollText: '<img src="public/assets/images/icon/up.png" alt="caret" />',
     easingType: 'linear',
     scrollSpeed: 900,
     animation: 'fade'

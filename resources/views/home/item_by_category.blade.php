@@ -15,9 +15,9 @@
                             <div class="latest-blog-image">
                                 <a href="{{ route('item.show',['url'=>$item->url]) }}">
                                     @if($item->avatar == null)
-                                        <img src="{{asset('assets/images/techfavicon.jpg')}}" alt="">
+                                        <img src="{{asset('public/assets/images/techfavicon.jpg')}}" alt="">
                                     @else
-                                        <img src="{{asset($item->avatar)}}" alt="">
+                                        <img src="{{route("item.image",['filename'=>$item->avatar])}}" alt="">
                                     @endif
                                     </a>
                             </div>

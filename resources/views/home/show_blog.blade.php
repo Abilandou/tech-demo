@@ -18,7 +18,7 @@
                             <h4 class="title">OTHER CATEGORIES</h4>
                             <ul>  
                                 @foreach($categories as $a_category)
-                                    <li><a href="{{route('category.with.blog',['name'=>$a_category->name])}}">@if(($blog->category['name']) != ($a_category->name)){{$a_category->name}} @endif</a></li>
+                                    <li><a href="{{route('category.with.blog',['category_name'=>$a_category->name])}}">@if(($blog->category['name']) != ($a_category->name)){{$a_category->name}} @endif</a></li>
                                 @endforeach
                             </ul>
                         </div>
@@ -34,11 +34,11 @@
                 <h3 class="text-bold ml-4 my-3">{{$blog->title}}</h3>
                 <div class="blog-details-wrapper">
                     <div class="blog-details-image">
-                        <img src="{{asset($blog->avatar)}}" width="600px" height="200px" class="img-fluid" alt="">
+                        <img src="{{route('blog.image',["filename" => $blog->avatar])}}" width="600px" height="200px" class="img-fluid" alt="">
                     </div>
                     <div class="postinfo-wrapper">
                         <div class="post-info">
-                            <p>{{$blog->description}}</p
+                            <p>{!! $blog->description !!}</p
                         </div>
                     </div>
                 </div>

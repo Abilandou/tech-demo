@@ -19,11 +19,13 @@ Route::get('contact/', 'HomeController@contact')->name('contact.page');
 Route::get('blog/', 'HomeController@blog')->name('blog.page');
 Route::get('service/', 'HomeController@service')->name('service.page');
 Route::get('home/', 'HomeController@index')->name('home');
+
  //!Service
  Route::get('service/{url}/', 'HomeController@singleService')->name('single.service');
  Route::get('blog/{url}/', 'HomeController@singleBlog')->name('single.blog');
  Route::get('category/{category_name}/', 'HomeController@blogCategories')->name('category.with.blog');
  Route::post('contact/us/', 'HomeController@contactUs')->name('user.contact');
+ Route::get('plans', 'PlanController@webPlans')->name('site.plans.index');
 
  //!global shop
  Route::get('shop/items', 'HomeController@shopItems')->name('home.shop.items');
@@ -33,6 +35,20 @@ Route::get('home/', 'HomeController@index')->name('home');
  //!enquiry
  Route::post('enquiry', 'HomeController@makeEnquiry')->name('make.enquiry');
 
+ //!View images using a link
+Route::get('blog/image/{filename}', 'HomeController@blogImage')->name('blog.image');
+Route::get('user/image/{filename}', 'HomeController@userImage')->name('user.image');
+Route::get('item/image/{filename}', 'HomeController@itemImage')->name('item.image');
+Route::get('service/image/{filename}', 'HomeController@serviceImage')->name('service.image');
+Route::get('testimony/image/{filename}', 'HomeController@testimonyImage')->name('testimony.image');
+
+//!Forget password
+
+Route::get('password/forget', 'Account\AccountController@showVerifyEmailForm')->name('show.verify.email');
+Route::post('get/reset/link', 'Account\AccountController@getPasswordResetLink')->name('get.password.reset.link');
+Route::get('admin/password/reset/form/{token}', 'Account\AccountController@showPasswordResetForm')->name('confirm.reset.password');
+Route::post('reset/password/', 'Account\AccountController@resetPassword')->name('reset.password');
+
 // Auth::routes();
 Route::group(['prefix' => 'admin'], function () {
     Route::get('login/', 'Auth\LoginController@adminLoginForm')->name('admin.login.form');
@@ -40,7 +56,7 @@ Route::group(['prefix' => 'admin'], function () {
     Route::get('register/', 'Auth\RegisterController@adminRegisterForm')->name('admin.register.form');
     Route::post('admin-register/', 'Auth\RegisterController@adminRegister')->name('admin.register');
 
-   Route::group(['middleware' => ['auth']], function(){
+   Route::group(['middleware' => ['admin']], function(){
         Route::get('/dashboard', 'Auth\AdminController@dashboard')->name('admin.dashboard');
         Route::get('logout/', 'Auth\LoginController@adminLogout')->name('admin.logout');
 
@@ -67,6 +83,15 @@ Route::group(['prefix' => 'admin'], function () {
           Route::post('delete/category/', 'Auth\BlogController@deleteCategory')->name('admin.delete.category');
           Route::post('add/category/', 'Auth\BlogController@addCategory')->name('category.add');
           Route::post('update/category/{category_id}/', 'Auth\BlogController@updateCategory')->name('category.update');
+
+          //!Plans
+          Route::get('plans', 'PlanController@index')->name('plans.index');
+          Route::post('delete/plan', 'PlanController@destroy')->name('admin.delete.plan');
+          Route::post('update/plan/{plan_id}/', 'PlanController@update')->name('plan.update');
+          Route::post('add/plan/', 'PlanController@addPlan')->name('plan.add');
+
+          Route::get('plan/enquiries', 'PlanController@enquiries')->name('plan.enquiries');
+          Route::post('delete/plan/enquiry', 'PlanController@deleteEnquiry')->name('delete.plan.enquiry');
 
 
            //!Blogs
@@ -98,6 +123,11 @@ Route::group(['prefix' => 'admin'], function () {
             Route::get('/enquiries', 'Auth\ShopController@enquiries')->name('item.enquiry');
             Route::post('delete/enq', 'Auth\ShopController@deleteEnquiry')->name('enquiry.delete');
 
+        //!Account & Settings
+        Route::get('setting', 'Account\AccountController@setting')->name('admin.setting');
+        Route::post('update/password', 'Account\AccountController@changePassword')->name('admin.update.password');
+        Route::get('profile', 'Account\AccountController@profile')->name('admin.profile');
+        Route::post('update/profile', 'Account\AccountController@updateProfile')->name('admin.update.profile');
 
    });
 

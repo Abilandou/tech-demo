@@ -1,30 +1,32 @@
 @extends('layouts.adminLayout')
+@section('title', 'Blogs')
 @section('content')
 
-
-<div class="container-fluid px-xl-5">
-    <section class="py-5">
-      <div class="row">
-        <div class="col-lg-12 mb-4">
-          <div class="card">
-            <div class="card-header">
-              <h6 class="text-uppercase mb-0">Blogs</h6>
-              <div class="float-right"> 
-                  <button type="button" data-toggle="modal" data-target="#addblogModal" class="btn btn-primary">
-                      Add
-                    </button>
-                </div>
+<!-- Content Wrapper START -->
+<div class="main-content">
+<div class="container-fluid">
+    <div class="page-title">
+        <h4>Blogs</h4>
+    </div>
+    <div class="row">
+    <div class="col-md-12">
+        <div class="card">
+        <div class="card-block">
+            <div class="float-right"> 
+                <button type="button" data-toggle="modal" data-target="#addblogModal" class="btn btn-primary">
+                    Add
+                </button>
             </div>
-            <div class="card-body">                           
-              <table class="table table-striped table-hover table-bordered card-text">
+            <div class="table-overflow">                           
+                <table id="dt-opt" class="table table-lg table-hover table-bordered">
                 <thead>
-                  <tr>
+                    <tr>
                     <th>#</th>
                     <th>Title</th>
                     <th>Description</th>
                     <th>Avatar</th>
                     <th>Action</th>
-                  </tr>
+                    </tr>
                 </thead>
                 <tbody>
                     <?php $i = 1; ?>
@@ -34,7 +36,7 @@
                                 <td>{{ $i++ }}</td>
                                 <td>{{$blog->title}}</td>
                                 <td>{{Str::limit($blog->description, 15)}}</td>
-                                <td><img src="{{asset($blog->avatar)}}" alt="avatar"
+                                <td><img src="{{route('blog.image',["filename" => $blog->avatar])}}" alt="avatar"
                                     style="max-width: 2.5rem;" class="img-fluid rounded-circle shadow"></td>
                                 <td>
 
@@ -56,7 +58,7 @@
                             </tr>
 
                             {{-- Get blog Details --}}
-                            <div class="col-lg-4 mb-5">
+                            <div class="col-lg-4">
                                 <div id="blog-modal{{$blog->id}}" tabindex="-1" role="dialog" 
                                     aria-labelledby="exampleModalLabel" aria-hidden="true" class="modal fade  modal-lg">
                                     <div role="document" class="modal-dialog">
@@ -67,7 +69,7 @@
                                             <h3 class="h6 text-uppercase mb-0">blog Details</h3><hr/><br/>
                                         <p>Detail Information for: <b class="text-success">{{ $blog->title }}</b></p>
                                             <div class="my-4">
-                                                <b class="mr-3">Avatar:</b> <img src="{{asset($blog->avatar)}}" alt="avatar"
+                                                <b class="mr-3">Avatar:</b> <img src="{{route('blog.image',["filename" => $blog->avatar])}}" alt="avatar"
                                                     class="img-fluid rounded-circle shadow">
                                             </div>
                                             <div class="my-2">
@@ -86,7 +88,7 @@
                             </div>
 
                             {{-- Edit blog Modal --}}
-                            <div class="col-lg-4 mb-5">
+                            <div class="col-lg-4">
                                 <div id="blog-edit-modal{{$blog->id}}" tabindex="-1" role="dialog" 
                                     aria-labelledby="exampleModalLabel" aria-hidden="true" class="modal fade  modal-lg">
                                     <div role="document" class="modal-dialog">
@@ -128,7 +130,7 @@
                                             <div class="form-group row">
                                                 <label for="form-1-1" class="col-md-2 control-label">Avatar</label>
                                                 <div class="col-md-10">
-                                                    <img src="{{asset($blog->avatar)}}" alt="avatar"
+                                                    <img src="{{route('blog.image',["filename" => $blog->avatar])}}" alt="avatar"
                                                         style="max-width: 2.5rem;" class="img-fluid rounded-circle shadow">
                                                     <input type="file" name="avatar"
                                                     class="form-control" id="form-1-1" placeholder=" Avatar">
@@ -151,71 +153,71 @@
                     @endif
                 
                 </tbody>
-              </table>
+                </table>
             </div> 
-          </div>
-            <!-- Modal Form-->
-            <div class="col-lg-4 mb-5">
-                <div id="addblogModal" tabindex="-1" role="dialog" 
-                    aria-labelledby="exampleModalLabel" aria-hidden="true" class="modal fade  modal-lg">
-                    <div role="document" class="modal-dialog">
-                        
-                    <div class="modal-content">
-                        
-                        <div class="modal-body">
-                            <h3 class="h6 text-uppercase mb-0">Add blog</h3><hr/><br/>
-                        <p>Add A New blog To The System.</p>
-                        <form action="{{ route('blog.add') }}" method="POST" class="form-horizontal mrg-top-40 pdd-right-30" enctype="multipart/form-data">
-                            @csrf
-                            <div class="form-group row">
-                                <label for="form-1-1" class="col-md-2 control-label">blog Title</label>
-                                <div class="col-md-10">
-                                    <input type="text" name="title" required 
-                                    class="form-control" id="form-1-1" placeholder=" blog title">
-                                </div>
+        </div>
+        <!-- Modal Form-->
+        <div class="col-lg-4">
+            <div id="addblogModal" tabindex="-1" role="dialog" 
+                aria-labelledby="exampleModalLabel" aria-hidden="true" class="modal fade  modal-lg">
+                <div role="document" class="modal-dialog">
+                    
+                <div class="modal-content">
+                    
+                    <div class="modal-body">
+                        <h3 class="h6 text-uppercase mb-0">Add blog</h3><hr/><br/>
+                    <p>Add A New blog To The System.</p>
+                    <form action="{{ route('blog.add') }}" method="POST" class="form-horizontal mrg-top-40 pdd-right-30" enctype="multipart/form-data">
+                        @csrf
+                        <div class="form-group row">
+                            <label for="form-1-1" class="col-md-2 control-label">blog Title</label>
+                            <div class="col-md-10">
+                                <input type="text" name="title" required 
+                                class="form-control" id="form-1-1" placeholder=" blog title">
                             </div>
-                            <div class="form-group row">
-                                <label for="form-1-5" class="col-md-2 control-label">Description</label>
-                                <div class="col-md-10">
-                                    <textarea class="form-control" name="description"
-                                        rows="10" id="form-1-5"></textarea>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <select name="category_id" required class="form-control selection my-3 py-2 pl-3" >
-                                    <option value="" disabled selected>Select Blog Category</option>
-                                    @foreach($categories as $category)
-                                        <option value="{{ $category->id }}">{{ $category->name }}</option>
-                                    @endforeach
-                                </select>
-                                    @error('category_id')
-                                        <span class="invalid-feedback text-center" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
-                                    @enderror
-                            </div>
-                            <div class="form-group row">
-                                <label for="form-1-1" class="col-md-2 control-label">Avatar</label>
-                                <div class="col-md-10">
-                                    <input type="file" name="avatar" required 
-                                    class="form-control" id="form-1-1" placeholder=" Avatar">
-                                </div>
-                            </div>
-                        
                         </div>
-                        <div class="modal-footer">
-                        <button type="button" data-dismiss="modal" class="btn btn-secondary">Close</button>
-                        <button type="submit" class="btn btn-primary">Add</button>
-                    </form>
+                        <div class="form-group row">
+                            <label for="form-1-5" class="col-md-2 control-label">Description</label>
+                            <div class="col-md-10">
+                                <textarea class="form-control" name="description"
+                                    rows="10" id="form-1-5"></textarea>
+                            </div>
                         </div>
+                        <div class="form-group">
+                            <select name="category_id" required class="form-control selection my-3 py-2 pl-3" >
+                                <option value="" disabled selected>Select Blog Category</option>
+                                @foreach($categories as $category)
+                                    <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                @endforeach
+                            </select>
+                                @error('category_id')
+                                    <span class="invalid-feedback text-center" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                        </div>
+                        <div class="form-group row">
+                            <label for="form-1-1" class="col-md-2 control-label">Avatar</label>
+                            <div class="col-md-10">
+                                <input type="file" name="avatar" required 
+                                class="form-control" id="form-1-1" placeholder=" Avatar">
+                            </div>
+                        </div>
+                    
                     </div>
+                    <div class="modal-footer">
+                    <button type="button" data-dismiss="modal" class="btn btn-secondary">Close</button>
+                    <button type="submit" class="btn btn-primary">Add</button>
+                </form>
                     </div>
+                </div>
                 </div>
             </div>
         </div>
-      </div>
-    </section>
-  </div>
+    </div>
+    </div>
+</div>
+</div>
 
 
 @endsection

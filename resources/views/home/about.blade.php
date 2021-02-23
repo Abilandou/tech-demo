@@ -8,32 +8,32 @@
         <div class="row align-items-center">
             <div class="col-lg-5">
                 <!-- about-us-image Start -->
-                <div class="about-us-image  wow fadeInBottom" data-wow-duration="1s">
-                    <img src="assets/images/about/about-02.png" alt="">
+                <div class="about-us-image wow fadeInBottom" data-wow-duration="1s">
+                    <img src="{{ asset('public/assets/images/about/about-02.png')}}" alt="">
                 </div><!--// about-us-image End -->
             </div>
             <div class="col-lg-6 offset-lg-1">
                 <div class="about-us-wrap">
                     <!-- section-title Start -->
-                    <div class="section-title text-left">
+                    <div class="text-left section-title">
                         <h4>ABOUT US</h4>
-                        <h3>What We <span>Are</span></h3>
+                        <h3>Why Choose <span>Us</span></h3>
                     </div>
                     <!--// section-title End -->
 
                     <!-- About us content Start -->
                     <div class="about-us-content">
-                        <p>
-                          It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.
-                          The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters,page when looking at its layout.
-                          The point of using
+                        <p class="text-justify">
+                            We design, Evaluate and justify technology solutions from a thorough 
+                            understanding of the business benefit for your company.
+                            Our extensive experience managing all types of complex projects means we 
+                            will handle every detail and coordinate all vendors so you can rest assured 
+                            that your project will be completed on time and on budget. We want you to be 
+                            completely satisfied with our services.
                         </p>
-                        <p>It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.</p>
-                        <ul>
-                            <li>Content of a page when looking at its layout. </li>
-                            <li>Content of a page when looking at its layout azer duskam. </li>
-                            <li>Content of a page when looking at its layout azer</li>
-                        </ul>  
+                        <p>
+                            We will do whatever it takes to make you happy.
+                        </p>
                     </div>
                     <!--// About us content End -->
                 </div>
@@ -50,7 +50,7 @@
         <div class="row">
         <div class="col-lg-3 col-sm-6">
             <!-- counter start -->
-            <div class="counter text-center mt--30">
+            <div class="text-center counter mt--30">
                 <div class="count-icon">
                     <i class="bi bi-cup"></i>
                 </div>
@@ -61,7 +61,7 @@
         </div>
         <div class="col-lg-3 col-sm-6">
             <!-- counter start -->
-            <div class="counter text-center mt--30">
+            <div class="text-center counter mt--30">
                 <div class="count-icon">
                     <i class="bi bi-like"></i>
                 </div>
@@ -72,7 +72,7 @@
         </div>
         <div class="col-lg-3 col-sm-6">
             <!-- counter start --> 
-            <div class="counter text-center mt--30">
+            <div class="text-center counter mt--30">
                 <div class="count-icon">
                     <i class="bi bi-emo-smile"></i>
                 </div>
@@ -83,7 +83,7 @@
         </div>
         <div class="col-lg-3 col-sm-6">
             <!-- counter start -->
-            <div class="counter text-center mt--30">
+            <div class="text-center counter mt--30">
                 <div class="count-icon">
                     <i class="bi bi-screen"></i>
                 </div>
@@ -118,7 +118,7 @@
                         <!-- Single Team Start -->
                         <div class="single-team mt--30">
                             <div class="team-imgae">
-                                <img src="{{$member->avatar}}" alt="">
+                                <img style="height: 250px; width:100%;" src="{{route('user.image',['filename'=>$member->avatar])}}" alt="">
                                 <div class="social-link">
                                     @if($member->facebook == null)
                                         <a href="#"><i class="bi bi-facebook"></i></a>
@@ -155,9 +155,9 @@
         <div class="row">
             <div class="col-lg-12">
                 <div class="perfect-start-inner">
-                    <p>Make Your Perfect Business Right Now!</p>
+                    <p>Get that business going by building a website Now!!!</p>
                     <div class="get-started-button">
-                        <a href="#" class="start-btn">Get Started</a>
+                        <a href="{{ route('site.plans.index') }}" class="start-btn">Get Started</a>
                     </div>
                 </div>
             </div>

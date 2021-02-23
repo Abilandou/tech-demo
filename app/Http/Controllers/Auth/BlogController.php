@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Category;
 use App\Blog;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class BlogController extends Controller
 {
@@ -113,22 +115,25 @@ class BlogController extends Controller
         $blog->title = $request->title;
         $blog->description = $request->description;
         $blog->category_id = $request->category_id;
-        $blog->url = strtolower(str_replace(' ', '-', $request->title));
-        if($request->hasFile('avatar')){
-             // filename with extension
-             $fileNameWithExt = $request->file('avatar')->getClientOriginalName();
-             // filename
-             $filename = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
-             // extension
-             $extension = $request->file('avatar')->getClientOriginalExtension();
-             // filename to store
-             $fileNameToStore = $filename.'_'.time().'.'.$extension;
+        $blog->url = Str::slug($request->title).'-'.time();
 
-             $path = $request->file('avatar')->move('avatars/blogs/', $fileNameToStore);
 
-             $path_name = $path->getPathname();
+        if($request->hasFile('avatar'))
+        {
+            // $path = $request->file('profile')->move(storage_path('profiles/users'));
+            // $file_name = basename($path);
+            $fileNameWithExt = $request->file('avatar')->getClientOriginalName();
+            // filename
+            $filename = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
+            // extension
+            $extension = $request->file('avatar')->getClientOriginalExtension();
+            // filename to store
+            $fileNameToStore = $filename.'_'.time().'.'.$extension;
+            $path = $request->file('avatar')->store('public/blogs');
+            $file_name = basename($path);
         }
-        $blog->avatar = $path_name;
+
+        $blog->avatar = $file_name;
         $blog->save();
         if($blog){
             session()->flash('success', 'Blog Added successfully');
@@ -145,9 +150,9 @@ class BlogController extends Controller
             'title' => 'required|min:3',
         ]);
 
-         //Handle file upload for the avatar
-         if($request->hasFile('avatar')){
-            // filename with extension
+
+        if($request->hasFile('avatar'))
+        {
             $fileNameWithExt = $request->file('avatar')->getClientOriginalName();
             // filename
             $filename = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
@@ -155,31 +160,29 @@ class BlogController extends Controller
             $extension = $request->file('avatar')->getClientOriginalExtension();
             // filename to store
             $fileNameToStore = $filename.'_'.time().'.'.$extension;
-
-            $path = $request->file('avatar')->move('avatars/blogs/', $fileNameToStore);
-
-            $path_name = $path->getPathname();
-       }
-       // Incase no image was not selected when trying to update profile information, maintain the previous image.
-       if(empty($path_name)){
-           $the_path = Blog::where(['id'=>$blog_id])->first();
-           $get_path = $the_path->avatar;
-           $path_name = $get_path;
-       }
-       $blog = Blog::where(['id'=>$blog_id])->update([
-           'title' => $request->title,
-           'description' => $request->description,
-           'category_id' => $request->category_id,
-           'url'  => strtolower(str_replace(' ', '-', $request->title)),
-           'avatar' => $path_name
-       ]);
-       if($blog){
-           session()->flash('success', 'Blog Updated successfully');
+            $path = $request->file('avatar')->store('public/blogs');
+            $file_name = basename($path);
+        }
+        
+        if(empty($file_name)){
+            $the_file = Blog::where(['id'=>$blog_id])->first();
+            $file_name = $the_file->photo;
+        }
+        
+        try {
+            Blog::where(['id'=>$blog_id])->update([
+                'title' => $request->title,
+                'description' => $request->description,
+                'category_id' => $request->category_id,
+                'url'  => strtolower(str_replace(' ', '-', $request->title)),
+                'avatar' => $file_name
+            ]);
+            session()->flash('success', 'Blog Updated successfully');
            return redirect()->back();
-       }else{
-           session()->flash('error', 'Unable to update blog, Possible internet error');
-           return redirect()->back();
-       }
+        }catch(\Exception $ex){
+            session()->flash('error', 'Unable to update blog, Possible internet error');
+            return redirect()->back();
+        }
 
     }
 

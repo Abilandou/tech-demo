@@ -1,31 +1,33 @@
 @extends('layouts.adminLayout')
+@section('title', 'Testimonials')
 @section('content')
 
-
-<div class="container-fluid px-xl-5">
-    <section class="py-5">
-      <div class="row">
-        <div class="col-lg-12 mb-4">
-          <div class="card">
-            <div class="card-header">
-              <h6 class="text-uppercase mb-0">Testimonies</h6>
-              <div class="float-right"> 
-                  <button type="button" data-toggle="modal" data-target="#addtestimonyModal" class="btn btn-primary">
-                      Add
-                    </button>
-                </div>
+<!-- Content Wrapper START -->
+<div class="main-content">
+<div class="container-fluid">
+    <div class="page-title">
+        <h4>Testimonies</h4>
+    </div>
+    <div class="row">
+    <div class="col-md-12">
+        <div class="card">
+        <div class="card-block">
+            <div class="float-right"> 
+                <button type="button" data-toggle="modal" data-target="#addtestimonyModal" class="btn btn-primary">
+                    Add
+                </button>
             </div>
-            <div class="card-body">                           
-              <table class="table table-striped table-hover table-bordered card-text">
+            <div class="table-overflow">                           
+                <table id="dt-opt" class="table table-lg table-hover table-bordered">
                 <thead>
-                  <tr>
+                    <tr>
                     <th>#</th>
                     <th>Name</th>
                     <th>Profession</th>
                     <th>Testimony</th>
                     <th>Avatar</th>
                     <th>Action</th>
-                  </tr>
+                    </tr>
                 </thead>
                 <tbody>
                     <?php $i = 1; ?>
@@ -36,7 +38,7 @@
                                 <td>{{$testimony->name}}</td>
                                 <td>{{$testimony->profession}}</td>
                                 <td>{{Str::limit($testimony->testimony, 15)}}</td>
-                                <td><img src="{{asset($testimony->avatar)}}" alt="avatar"
+                                <td><img src="{{route("testimony.image",["filename"=>$testimony->avatar])}}" alt="avatar"
                                     style="max-width: 2.5rem;" class="img-fluid rounded-circle shadow"></td>
                                 <td>
 
@@ -58,7 +60,7 @@
                             </tr>
 
                             {{-- Get testimony Details --}}
-                            <div class="col-lg-4 mb-5">
+                            <div class="col-lg-4">
                                 <div id="testimony-modal{{$testimony->id}}" tabindex="-1" role="dialog" 
                                     aria-labelledby="exampleModalLabel" aria-hidden="true" class="modal fade  modal-lg">
                                     <div role="document" class="modal-dialog">
@@ -69,7 +71,7 @@
                                             <h3 class="h6 text-uppercase mb-0">testimony Details</h3><hr/><br/>
                                         <p>Detail Information for: <b class="text-success">{{ $testimony->name }}</b> Testimony</p>
                                             <div class="my-4">
-                                                <b class="mr-3">Avatar:</b> <img src="{{asset($testimony->avatar)}}" alt="avatar"
+                                                <b class="mr-3">Avatar:</b> <img src="{{route("testimony.image",["filename"=>$testimony->avatar])}}" alt="avatar"
                                                     class="img-fluid rounded-circle shadow">
                                             </div>
                                             <div class="my-2">
@@ -88,7 +90,7 @@
                             </div>
 
                             {{-- Edit testimony Modal --}}
-                            <div class="col-lg-4 mb-5">
+                            <div class="col-lg-4">
                                 <div id="testimony-edit-modal{{$testimony->id}}" tabindex="-1" role="dialog" 
                                     aria-labelledby="exampleModalLabel" aria-hidden="true" class="modal fade  modal-lg">
                                     <div role="document" class="modal-dialog">
@@ -125,7 +127,7 @@
                                             <div class="form-group row">
                                                 <label for="form-1-1" class="col-md-2 control-label">Avatar</label>
                                                 <div class="col-md-10">
-                                                    <img src="{{asset($testimony->avatar)}}" alt="avatar"
+                                                    <img src="{{route("testimony.image",["filename"=>$testimony->avatar])}}" alt="avatar"
                                                         style="max-width: 2.5rem;" class="img-fluid rounded-circle shadow">
                                                     <input type="file" name="avatar"
                                                     class="form-control" id="form-1-1" placeholder=" Avatar">
@@ -148,65 +150,64 @@
                     @endif
                 
                 </tbody>
-              </table>
+                </table>
             </div> 
-          </div>
-            <!-- Modal Form-->
-            <div class="col-lg-4 mb-5">
-                <div id="addtestimonyModal" tabindex="-1" role="dialog" 
-                    aria-labelledby="exampleModalLabel" aria-hidden="true" class="modal fade  modal-lg">
-                    <div role="document" class="modal-dialog">
-                        
-                    <div class="modal-content">
-                        
-                        <div class="modal-body">
-                            <h3 class="h6 text-uppercase mb-0">Add testimony</h3><hr/><br/>
-                        <p>Add A New testimony To The System.</p>
-                        <form action="{{ route('testimony.add') }}" method="POST" class="form-horizontal mrg-top-40 pdd-right-30" enctype="multipart/form-data">
-                            @csrf
-                            <div class="form-group row">
-                                <label for="form-1-1" class="col-md-2 control-label">Testifier Name</label>
-                                <div class="col-md-10">
-                                    <input type="text" name="name" required 
-                                    class="form-control" id="form-1-1" placeholder=" Testifier Name">
-                                </div>
+        </div>
+        <!-- Modal Form-->
+        <div class="col-lg-4">
+            <div id="addtestimonyModal" tabindex="-1" role="dialog" 
+                aria-labelledby="exampleModalLabel" aria-hidden="true" class="modal fade  modal-lg">
+                <div role="document" class="modal-dialog">
+                    
+                <div class="modal-content">
+                    
+                    <div class="modal-body">
+                        <h3 class="h6 text-uppercase mb-0">Add testimony</h3><hr/><br/>
+                    <p>Add A New testimony To The System.</p>
+                    <form action="{{ route('testimony.add') }}" method="POST" class="form-horizontal mrg-top-40 pdd-right-30" enctype="multipart/form-data">
+                        @csrf
+                        <div class="form-group row">
+                            <label for="form-1-1" class="col-md-2 control-label">Testifier Name</label>
+                            <div class="col-md-10">
+                                <input type="text" name="name" required 
+                                class="form-control" id="form-1-1" placeholder=" Testifier Name">
                             </div>
-                            <div class="form-group row">
-                                <label for="form-1-1" class="col-md-2 control-label">Testifier Profession</label>
-                                <div class="col-md-10">
-                                    <input type="text" name="profession" required 
-                                    class="form-control" id="form-1-1" placeholder=" testifier profession">
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label for="form-1-5" class="col-md-2 control-label">Testimony</label>
-                                <div class="col-md-10">
-                                    <textarea class="form-control" name="testimony"
-                                        rows="10" id="form-1-5"></textarea>
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label for="form-1-1" class="col-md-2 control-label">Avatar</label>
-                                <div class="col-md-10">
-                                    <input type="file" name="avatar" required 
-                                    class="form-control" id="form-1-1" placeholder=" Avatar">
-                                </div>
-                            </div>
-                        
                         </div>
-                        <div class="modal-footer">
-                        <button type="button" data-dismiss="modal" class="btn btn-secondary">Close</button>
-                        <button type="submit" class="btn btn-primary">Add</button>
-                    </form>
+                        <div class="form-group row">
+                            <label for="form-1-1" class="col-md-2 control-label">Testifier Profession</label>
+                            <div class="col-md-10">
+                                <input type="text" name="profession" required 
+                                class="form-control" id="form-1-1" placeholder=" testifier profession">
+                            </div>
                         </div>
+                        <div class="form-group row">
+                            <label for="form-1-5" class="col-md-2 control-label">Testimony</label>
+                            <div class="col-md-10">
+                                <textarea class="form-control" name="testimony"
+                                    rows="10" id="form-1-5"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="form-1-1" class="col-md-2 control-label">Avatar</label>
+                            <div class="col-md-10">
+                                <input type="file" name="avatar"
+                                class="form-control" id="form-1-1" placeholder=" Avatar">
+                            </div>
+                        </div>
+                    
                     </div>
+                    <div class="modal-footer">
+                    <button type="button" data-dismiss="modal" class="btn btn-secondary">Close</button>
+                    <button type="submit" class="btn btn-primary">Add</button>
+                </form>
                     </div>
+                </div>
                 </div>
             </div>
         </div>
-      </div>
-    </section>
-  </div>
-
+    </div>
+    </div>
+</div>
+</div>
 
 @endsection
